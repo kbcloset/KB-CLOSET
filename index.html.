@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KB Closet</title>
+  <style>
+    body {
+      margin: 0;
+      background: #fbf7f5;
+      color: #321c22;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    header {
+      background: #8e1b32;
+      color: white;
+      padding: 65px 20px;
+    }
+    h1 {
+      font-size: 48px;
+      letter-spacing: 5px;
+    }
+    p {
+      font-size: 16px;
+    }
+    button {
+      background: white;
+      color: #8e1b32;
+      border: 1px solid white;
+      padding: 14px 25px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    main {
+      padding: 45px 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>KB CLOSET</h1>
+    <p>seu próximo look favorito começa aqui.</p>
+    <button onclick="document.getElementById('colecao').scrollIntoView()">
+      EXPLORAR COLEÇÃO
+    </button>
+  </header>
+
+  <main id="colecao">
+    <h2>nova coleção</h2>
+    <p>em breve, novidades para você!</p>
+  </main>
+</body>
+</html>
