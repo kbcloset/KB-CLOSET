@@ -1,196 +1,318 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#13090c">
-  <title>KB. CLOSET — Too hot to be basic.</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root{--red:#e32645;--deep:#13090c;--cream:#fff4ec;--muted:#bca9a7;--line:#382027}
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--deep);color:var(--cream);font-family:Arial,Helvetica,sans-serif}
-    a{color:inherit}
-    .topline{background:var(--red);color:white;text-align:center;padding:9px 12px;font-size:10px;letter-spacing:2px;font-weight:800}
-    header{display:flex;align-items:center;justify-content:space-between;padding:20px 6%;border-bottom:1px solid var(--line)}
-    .logo{font-size:24px;font-weight:950;letter-spacing:-1.5px}.logo span{color:var(--red)}
-    .nav{display:flex;gap:22px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#eadbd8}
-    button{border:0;cursor:pointer;font-weight:800}
-    .account-btn{background:transparent;border:1px solid #73515b;color:white;padding:11px 15px;border-radius:2px;font-size:11px;letter-spacing:1px}
-    .hero{padding:70px 7% 60px;background:radial-gradient(ellipse at 80% 20%,#4c1020 0,transparent 48%),linear-gradient(120deg,#180b10,#10080b)}
-    .eyebrow{font-size:10px;letter-spacing:4px;color:#ff9eae;font-weight:800}
-    h1{font-size:clamp(48px,10vw,100px);line-height:.88;letter-spacing:-6px;text-transform:uppercase;margin:22px 0;max-width:800px}
-    h1 em{font-style:normal;color:var(--red)}
-    .hero p{color:#d8c5c5;max-width:430px;line-height:1.7;font-size:14px}
-    .cta{display:inline-block;background:var(--red);color:white;text-decoration:none;padding:16px 23px;margin-top:20px;font-size:11px;font-weight:900;letter-spacing:1.5px}
-    .section{padding:55px 6%}
-    .section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:25px}
-    .section h2{font-size:28px;letter-spacing:-1px;margin:0;text-transform:uppercase}
-    .section-head small{color:var(--muted);letter-spacing:2px;font-size:9px}
-    .categories{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-    .category{min-height:170px;background:linear-gradient(145deg,#35101b,#1c0c12);border:1px solid var(--line);display:flex;align-items:end;padding:18px;font-size:22px;font-weight:900;text-transform:uppercase}
-    .category:nth-child(2){background:linear-gradient(145deg,#501321,#210b12)}
-    .category:nth-child(3){background:linear-gradient(145deg,#2c1820,#13090c)}
-    .products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    .product{border:1px solid var(--line);background:#1a0d12}
-    .product-art{height:220px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#421321,#1b0b11);font-size:55px}
-    .product-info{padding:15px}.product-info strong{display:block;font-size:13px;text-transform:uppercase}.product-info small{color:var(--muted);display:block;margin-top:7px}
-    .buy{margin-top:13px;width:100%;padding:12px;background:var(--red);color:white;font-size:10px;letter-spacing:1px}
-    .account-section{padding:55px 6%;background:#1b0c12;border-top:1px solid var(--line)}
-    .account-wrap{max-width:520px;margin:auto}
-    .account-wrap h2{font-size:30px;margin:0 0 8px;text-transform:uppercase}
-    .account-wrap>p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:25px}
-    .tabs{display:flex;gap:8px;margin-bottom:18px}
-    .tab{flex:1;padding:13px;background:#2a141c;color:#e8d6d8;border:1px solid #57303d}
-    .tab.active{background:var(--red);border-color:var(--red);color:white}
-    label{display:block;font-size:10px;letter-spacing:1px;text-transform:uppercase;margin:13px 0 7px;color:#f0dfe0}
-    input{width:100%;padding:14px;background:#10080b;border:1px solid #57303d;color:white;border-radius:2px;font-size:14px;outline:none}
-    input:focus{border-color:#ff7188}
-    .submit{width:100%;padding:15px;background:var(--red);color:white;margin-top:18px;letter-spacing:1px}
-    .message{font-size:13px;line-height:1.5;margin-top:15px;color:#ffc2cc;min-height:20px}
-    .hidden{display:none!important}
-    .logged{padding:18px;border:1px solid #57303d;background:#13090c;line-height:1.6}
-    .logged button{margin-top:12px;background:transparent;border:1px solid #73515b;color:white;padding:10px 14px}
-    footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:2px;display:flex;justify-content:space-between}
-    @media(max-width:650px){header{padding:17px 5%}.nav{display:none}.hero{padding:58px 6%}h1{letter-spacing:-3px}.categories,.products{grid-template-columns:1fr 1fr}.category{min-height:130px;font-size:18px}.product-art{height:170px}.section{padding:42px 5%}.section-head{gap:15px;align-items:start;flex-direction:column}footer{gap:12px;flex-direction:column}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#13090c">
+<title>KB. CLOSET — Too hot to be basic.</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--red:#e32645;--deep:#13090c;--cream:#fff4ec;--muted:#bca9a7;--line:#382027}
+*{box-sizing:border-box}
+body{margin:0;background:var(--deep);color:var(--cream);font-family:Arial,Helvetica,sans-serif}
+a{color:inherit}
+button{border:0;cursor:pointer;font-weight:800}
+.topline{background:var(--red);text-align:center;padding:9px;font-size:10px;letter-spacing:2px;font-weight:800}
+header{display:flex;align-items:center;justify-content:space-between;padding:20px 6%;border-bottom:1px solid var(--line)}
+.logo{font-size:24px;font-weight:950;letter-spacing:-1.5px}.logo span{color:var(--red)}
+.nav{display:flex;gap:22px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
+.account-btn{background:transparent;border:1px solid #73515b;color:white;padding:11px 15px;font-size:11px}
+.hero{padding:70px 7% 60px;background:radial-gradient(ellipse at 80% 20%,#4c1020,transparent 48%),linear-gradient(120deg,#180b10,#10080b)}
+.eyebrow{font-size:10px;letter-spacing:4px;color:#ff9eae;font-weight:800}
+h1{font-size:clamp(48px,10vw,100px);line-height:.88;letter-spacing:-6px;text-transform:uppercase;margin:22px 0;max-width:800px}
+h1 em{font-style:normal;color:var(--red)}
+.hero p{color:#d8c5c5;max-width:430px;line-height:1.7;font-size:14px}
+.cta{display:inline-block;background:var(--red);color:white;text-decoration:none;padding:16px 23px;margin-top:20px;font-size:11px;font-weight:900;letter-spacing:1.5px}
+.section{padding:55px 6%}
+.section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:25px}
+.section h2{font-size:28px;letter-spacing:-1px;margin:0;text-transform:uppercase}
+.section-head small{color:var(--muted);letter-spacing:2px;font-size:9px}
+.categories{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.category{min-height:150px;background:linear-gradient(145deg,#35101b,#1c0c12);border:1px solid var(--line);display:flex;align-items:end;padding:18px;font-size:20px;font-weight:900;text-transform:uppercase;cursor:pointer}
+.category:nth-child(2){background:linear-gradient(145deg,#501321,#210b12)}
+.category:nth-child(3){background:linear-gradient(145deg,#2c1820,#13090c)}
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.product{border:1px solid var(--line);background:#1a0d12;overflow:hidden}
+.product-art{height:230px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#421321,#1b0b11);font-size:55px}
+.product-art img{width:100%;height:100%;object-fit:cover}
+.product-info{padding:15px}.product-info strong{display:block;font-size:13px;text-transform:uppercase}
+.product-info small{color:var(--muted);display:block;margin-top:7px}
+.buy{margin-top:13px;width:100%;padding:12px;background:var(--red);color:white;font-size:10px;letter-spacing:1px}
+.buy:disabled{opacity:.5;cursor:not-allowed}
+.account-section{padding:55px 6%;background:#1b0c12;border-top:1px solid var(--line)}
+.account-wrap{max-width:520px;margin:auto}
+.account-wrap h2{font-size:30px;margin:0 0 8px;text-transform:uppercase}
+.account-wrap>p{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:25px}
+.tabs{display:flex;gap:8px;margin-bottom:18px}
+.tab{flex:1;padding:13px;background:#2a141c;color:#e8d6d8;border:1px solid #57303d}
+.tab.active{background:var(--red);border-color:var(--red);color:white}
+label{display:block;font-size:10px;letter-spacing:1px;text-transform:uppercase;margin:13px 0 7px}
+input,select,textarea{width:100%;padding:14px;background:#10080b;border:1px solid #57303d;color:white;font-size:14px}
+.submit{width:100%;padding:15px;background:var(--red);color:white;margin-top:18px;letter-spacing:1px}
+.message{font-size:13px;line-height:1.5;margin-top:15px;color:#ffc2cc;min-height:20px}
+.hidden{display:none!important}
+.logged{padding:18px;border:1px solid #57303d;background:#13090c;line-height:1.6}
+.logged button,.secondary{margin-top:12px;background:transparent;border:1px solid #73515b;color:white;padding:10px 14px}
+.panel{max-width:900px;margin:25px auto;padding:20px;border:1px solid var(--line);background:#1a0d12}
+.panel h3{margin-top:0}
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cart{position:fixed;right:15px;bottom:15px;z-index:5;background:var(--red);color:white;padding:15px 20px;box-shadow:0 5px 25px #0008}
+.cart-box{position:fixed;inset:0;background:#000b;z-index:10;display:flex;justify-content:flex-end}
+.cart-content{background:#1a0d12;width:min(100%,430px);height:100%;overflow:auto;padding:24px}
+.cart-row,.order-row{border-bottom:1px solid var(--line);padding:14px 0;line-height:1.6}
+.cart-row button{background:transparent;color:#ff9eae;margin-left:8px}
+footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:2px;display:flex;justify-content:space-between}
+@media(max-width:650px){header{padding:17px 5%}.nav{display:none}.hero{padding:58px 6%}h1{letter-spacing:-3px}.categories,.products{grid-template-columns:1fr 1fr}.category{min-height:120px;font-size:16px}.product-art{height:170px}.section{padding:42px 5%}.section-head{gap:15px;align-items:start;flex-direction:column}.panel-grid{grid-template-columns:1fr}footer{gap:12px;flex-direction:column}}
+</style>
 </head>
 <body>
-  <div class="topline">NOVA COLEÇÃO • SEU PRÓXIMO LOOK FAVORITO ESTÁ AQUI</div>
-  <header>
-    <div class="logo">KB<span>.</span> CLOSET</div>
-    <nav class="nav"><a href="#categorias">Categorias</a><a href="#novidades">Novidades</a><a href="#conta">Minha conta</a></nav>
-    <button class="account-btn" onclick="document.querySelector('#conta').scrollIntoView({behavior:'smooth'})">MINHA CONTA ↗</button>
-  </header>
+<div class="topline">NOVA COLEÇÃO • SEU PRÓXIMO LOOK FAVORITO ESTÁ AQUI</div>
+<header>
+<div class="logo">KB<span>.</span> CLOSET</div>
+<nav class="nav"><a href="#categorias">Categorias</a><a href="#novidades">Novidades</a><a href="#conta">Minha conta</a></nav>
+<button class="account-btn" onclick="goToAccount()">MINHA CONTA ↗</button>
+</header>
 
-  <main>
-    <section class="hero">
-      <div class="eyebrow">O NOVO UNIFORME DAS IT GIRLS</div>
-      <h1>TOO HOT<br>TO BE <em>BASIC.</em></h1>
-      <p>Peças marcantes, atitude lá em cima e looks feitos pra chegar chegando. Seu próximo look favorito mora aqui.</p>
-      <a class="cta" href="#novidades">VER NOVIDADES ↗</a>
-    </section>
+<main>
+<section class="hero">
+<div class="eyebrow">O NOVO UNIFORME DAS IT GIRLS</div>
+<h1>TOO HOT<br>TO BE <em>BASIC.</em></h1>
+<p>Peças marcantes, atitude lá em cima e looks feitos pra chegar chegando. Seu próximo look favorito mora aqui.</p>
+<a class="cta" href="#novidades">VER NOVIDADES ↗</a>
+</section>
 
-    <section class="section" id="categorias">
-      <div class="section-head"><h2>ESCOLHA SUA VIBE</h2><small>ESCOLHA SUA VIBE</small></div>
-      <div class="categories">
-        <div class="category">Tops ↗</div><div class="category">Conjuntos ↗</div><div class="category">Vestidos ↗</div>
-      </div>
-    </section>
+<section class="section" id="categorias">
+<div class="section-head"><h2>ESCOLHA SUA VIBE</h2><small>KB. CLOSET</small></div>
+<div class="categories">
+<div class="category" onclick="filterCategory('Vestidos')">Vestidos ↗</div>
+<div class="category" onclick="filterCategory('Conjuntos')">Conjuntos ↗</div>
+<div class="category" onclick="filterCategory('Croppeds')">Croppeds ↗</div>
+<div class="category" onclick="filterCategory('New Drop')">New Drop ↗</div>
+</div>
+</section>
 
-    <section class="section" id="novidades">
-      <div class="section-head"><h2>Novidades</h2><small>EM BREVE</small></div>
-      <div class="products">
-        <article class="product"><div class="product-art">✦</div><div class="product-info"><strong>Nova obsessão</strong><small>Disponível em breve</small><button class="buy" onclick="goToAccount()">ENTRE NA SUA CONTA PARA COMPRAR</button></div></article>
-        <article class="product"><div class="product-art">♡</div><div class="product-info"><strong>Protagonista</strong><small>Disponível em breve</small><button class="buy" onclick="goToAccount()">ENTRE NA SUA CONTA PARA COMPRAR</button></div></article>
-        <article class="product"><div class="product-art">✧</div><div class="product-info"><strong>Energia de it girl</strong><small>Disponível em breve</small><button class="buy" onclick="goToAccount()">ENTRE NA SUA CONTA PARA COMPRAR</button></div></article>
-      </div>
-    </section>
+<section class="section" id="novidades">
+<div class="section-head"><h2 id="productHeading">NEW DROP</h2><small>TOO HOT TO BE BASIC</small></div>
+<div class="products" id="productGrid">
+<p>Carregando novidades...</p>
+</div>
+<div class="message" id="storeMessage"></div>
+</section>
 
-    <section class="account-section" id="conta">
-      <div class="account-wrap">
-        <div class="eyebrow">ÁREA DE CLIENTES KB CLOSET</div>
-        <h2 id="accountTitle">Sua conta. Seu closet.</h2>
-        <p id="accountIntro">Crie sua conta para fazer parte da KB Closet. O cadastro é obrigatório para comprar.</p>
-        <div id="authPanel">
-          <div class="tabs">
-            <button class="tab active" id="signupTab" onclick="setMode('signup')">CRIAR CONTA</button>
-            <button class="tab" id="loginTab" onclick="setMode('login')">ENTRAR</button>
-          </div>
-          <form id="authForm">
-            <div id="nameField"><label for="fullName">Nome completo</label><input id="fullName" autocomplete="name" placeholder="Seu nome" required></div>
-            <div id="phoneField"><label for="phone">WhatsApp</label><input id="phone" type="tel" autocomplete="tel" placeholder="(61) 99999-9999" required></div>
-            <label for="email">E-mail</label><input id="email" type="email" autocomplete="email" placeholder="seuemail@exemplo.com" required>
-            <label for="password">Senha</label><input id="password" type="password" autocomplete="new-password" placeholder="Mínimo de 6 caracteres" minlength="6" required>
-            <button class="submit" id="submitButton" type="submit">CRIAR MINHA CONTA ↗</button>
-          </form>
-          <div class="message" id="message" role="status" aria-live="polite"></div>
-        </div>
-        <div id="loggedPanel" class="logged hidden">
-          <strong>Você está conectada à KB Closet! ❤️‍🔥</strong>
-          <div id="loggedEmail"></div>
-          <button onclick="signOut()">SAIR DA CONTA</button>
-        </div>
-      </div>
-    </section>
-  </main>
-  <footer><span>KB. CLOSET</span><span>TOO HOT TO BE BASIC. © 2026</span></footer>
+<section class="account-section" id="conta">
+<div class="account-wrap">
+<div class="eyebrow">ÁREA DE CLIENTES KB CLOSET</div>
+<h2 id="accountTitle">Sua conta. Seu closet.</h2>
+<p id="accountIntro">Crie sua conta para fazer parte da KB Closet. O cadastro é obrigatório para comprar.</p>
+<div id="authPanel">
+<div class="tabs">
+<button class="tab active" id="signupTab" onclick="setMode('signup')">CRIAR CONTA</button>
+<button class="tab" id="loginTab" onclick="setMode('login')">ENTRAR</button>
+</div>
+<form id="authForm">
+<div id="nameField"><label for="fullName">Nome completo</label><input id="fullName" autocomplete="name" placeholder="Seu nome" required></div>
+<div id="phoneField"><label for="phone">WhatsApp</label><input id="phone" type="tel" autocomplete="tel" placeholder="(61) 99999-9999" required></div>
+<label for="email">E-mail</label><input id="email" type="email" autocomplete="email" placeholder="seuemail@exemplo.com" required>
+<label for="password">Senha</label><input id="password" type="password" autocomplete="new-password" placeholder="Mínimo de 6 caracteres" minlength="6" required>
+<button class="submit" id="submitButton" type="submit">CRIAR MINHA CONTA ↗</button>
+</form>
+<div class="message" id="message" role="status"></div>
+</div>
+<div id="loggedPanel" class="logged hidden">
+<strong>Você está conectada à KB Closet! ❤️‍🔥</strong>
+<div id="loggedEmail"></div>
+<button onclick="loadMyOrders()">MEUS PEDIDOS</button>
+<button onclick="signOut()">SAIR DA CONTA</button>
+</div>
+</div>
+<div id="ordersPanel" class="panel hidden">
+<h3>MEUS PEDIDOS</h3><div id="ordersList">Carregando...</div>
+</div>
+<div id="adminPanel" class="panel hidden">
+<h3>PAINEL KB CLOSET</h3>
+<p>Cadastro de produtos e acompanhamento dos pedidos.</p>
+<form id="productForm">
+<div class="panel-grid">
+<div><label>Nome do produto</label><input id="pName" required></div>
+<div><label>Categoria</label><select id="pCategory"><option>Vestidos</option><option>Conjuntos</option><option>Croppeds</option><option>New Drop</option></select></div>
+<div><label>Preço (R$)</label><input id="pPrice" type="number" min="0.01" step="0.01" required></div>
+<div><label>Estoque</label><input id="pStock" type="number" min="0" step="1" value="1" required></div>
+<div><label>Link da foto</label><input id="pImage" type="url" placeholder="https://..."></div>
+<div><label>Descrição</label><input id="pDescription"></div>
+</div>
+<button class="submit" type="submit">CADASTRAR PRODUTO</button>
+</form>
+<div id="adminOrders">Pedidos aparecerão aqui.</div>
+</div>
+</section>
+</main>
 
-  <script>
-    const SUPABASE_URL = 'https://tbygkbxvpnjcjsvqueuv.supabase.co';
-    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_RjqWz228EvN295E0zof1gA_J6Ju6FYi';
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-    let mode = 'signup';
+<button class="cart" onclick="openCart()">SACOLA (<span id="cartCount">0</span>)</button>
+<div id="cartLayer" class="cart-box hidden">
+<div class="cart-content">
+<button class="secondary" onclick="closeCart()">← CONTINUAR COMPRANDO</button>
+<h2>SUA SACOLA</h2>
+<div id="cartItems"></div>
+<h3 id="cartSubtotal">Subtotal: R$ 0,00</h3>
+<form id="checkoutForm">
+<label>Nome completo</label><input id="buyerName" required>
+<label>WhatsApp</label><input id="buyerPhone" type="tel" required>
+<label>Endereço de entrega</label><textarea id="buyerAddress" required></textarea>
+<label>Região</label>
+<select id="buyerZone" required>
+<option value="">Selecione sua região</option>
+<option value="Samambaia Sul">Samambaia Sul — R$ 7</option>
+<option value="Samambaia Norte">Samambaia Norte — R$ 12</option>
+<option value="Riacho Fundo">Riacho Fundo — R$ 15</option>
+<option value="Recanto das Emas">Recanto das Emas — R$ 15</option>
+<option value="Ceilândia">Ceilândia — R$ 20</option>
+<option value="Taguatinga">Taguatinga — R$ 20</option>
+<option value="Outro">Outra região do DF — combinar</option>
+</select>
+<p id="deliveryInfo"></p>
+<button class="submit" type="submit">FINALIZAR PEDIDO ↗</button>
+</form>
+<div class="message" id="checkoutMessage"></div>
+</div>
+</div>
 
-    function goToAccount(){ document.querySelector('#conta').scrollIntoView({behavior:'smooth'}); }
-    function setMode(nextMode){
-      mode = nextMode;
-      const signup = mode === 'signup';
-      document.getElementById('signupTab').classList.toggle('active', signup);
-      document.getElementById('loginTab').classList.toggle('active', !signup);
-      document.getElementById('nameField').classList.toggle('hidden', !signup);
-      document.getElementById('phoneField').classList.toggle('hidden', !signup);
-      document.getElementById('fullName').required = signup;
-      document.getElementById('phone').required = signup;
-      document.getElementById('password').autocomplete = signup ? 'new-password' : 'current-password';
-      document.getElementById('submitButton').textContent = signup ? 'CRIAR MINHA CONTA ↗' : 'ENTRAR NA MINHA CONTA ↗';
-      document.getElementById('accountTitle').textContent = signup ? 'Sua conta. Seu closet.' : 'Que bom ter você de volta.';
-      document.getElementById('accountIntro').textContent = signup ? 'Crie sua conta para fazer parte da KB Closet. O cadastro é obrigatório para comprar.' : 'Entre com seu e-mail e senha para acessar sua conta.';
-      document.getElementById('message').textContent = '';
-    }
+<footer><span>KB. CLOSET</span><span>TOO HOT TO BE BASIC. © 2026</span></footer>
 
-    document.getElementById('authForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const message = document.getElementById('message');
-      const submit = document.getElementById('submitButton');
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      submit.disabled = true;
-      submit.textContent = 'AGUARDE...';
-      message.textContent = '';
-      try {
-        if (mode === 'signup') {
-          const fullName = document.getElementById('fullName').value.trim();
-          const phone = document.getElementById('phone').value.trim();
-          const { data, error } = await supabaseClient.auth.signUp({
-            email, password,
-            options: { data: { full_name: fullName, phone } }
-          });
-          if (error) throw error;
-          if (data.session) {
-            message.textContent = 'Conta criada com sucesso! Você já está conectada. ❤️‍🔥';
-          } else {
-            message.textContent = 'Cadastro iniciado! Confira seu e-mail para confirmar a conta e depois entre por aqui.';
-          }
-        } else {
-          const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if (error) throw error;
-          message.textContent = 'Login realizado! Bem-vinda de volta. ❤️‍🔥';
-        }
-        await refreshAuth();
-      } catch (error) {
-        message.textContent = error.message || 'Não foi possível concluir. Confira os dados e tente novamente.';
-      } finally {
-        submit.disabled = false;
-        submit.textContent = mode === 'signup' ? 'CRIAR MINHA CONTA ↗' : 'ENTRAR NA MINHA CONTA ↗';
-      }
-    });
-
-    async function refreshAuth(){
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      const isLogged = !!session;
-      document.getElementById('authPanel').classList.toggle('hidden', isLogged);
-      document.getElementById('loggedPanel').classList.toggle('hidden', !isLogged);
-      document.getElementById('loggedEmail').textContent = isLogged ? session.user.email : '';
-    }
-    async function signOut(){
-      await supabaseClient.auth.signOut();
-      document.getElementById('message').textContent = 'Você saiu da sua conta.';
-      setMode('login');
-      await refreshAuth();
-    }
-    supabaseClient.auth.onAuthStateChange(() => refreshAuth());
-    refreshAuth();
-  </script>
+<script>
+const SUPABASE_URL='https://tbygkbxvpnjcjsvqueuv.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_RjqWz228EvN295E0zof1gA_J6Ju6FYi';
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+let mode='signup',products=[],cart=JSON.parse(localStorage.getItem('kb_cart')||'[]');
+const rates={'Samambaia Sul':7,'Samambaia Norte':12,'Riacho Fundo':15,'Recanto das Emas':15,'Ceilândia':20,'Taguatinga':20,'Outro':null};
+const money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+function goToAccount(){document.querySelector('#conta').scrollIntoView({behavior:'smooth'})}
+function setMode(nextMode){
+ mode=nextMode;let signup=mode==='signup';
+ document.getElementById('signupTab').classList.toggle('active',signup);
+ document.getElementById('loginTab').classList.toggle('active',!signup);
+ document.getElementById('nameField').classList.toggle('hidden',!signup);
+ document.getElementById('phoneField').classList.toggle('hidden',!signup);
+ document.getElementById('fullName').required=signup;
+ document.getElementById('phone').required=signup;
+ document.getElementById('password').autocomplete=signup?'new-password':'current-password';
+ document.getElementById('submitButton').textContent=signup?'CRIAR MINHA CONTA ↗':'ENTRAR NA MINHA CONTA ↗';
+ document.getElementById('accountTitle').textContent=signup?'Sua conta. Seu closet.':'Que bom ter você de volta.';
+ document.getElementById('accountIntro').textContent=signup?'Crie sua conta para fazer parte da KB Closet. O cadastro é obrigatório para comprar.':'Entre com seu e-mail e senha para acessar sua conta.';
+ document.getElementById('message').textContent='';
+}
+document.getElementById('authForm').addEventListener('submit',async e=>{
+ e.preventDefault();let msg=document.getElementById('message'),btn=document.getElementById('submitButton');
+ let email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;
+ btn.disabled=true;btn.textContent='AGUARDE...';msg.textContent='';
+ try{
+  if(mode==='signup'){
+   let fullName=document.getElementById('fullName').value.trim(),phone=document.getElementById('phone').value.trim();
+   let {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name:fullName,phone}}});
+   if(error)throw error;
+   msg.textContent=data.session?'Conta criada! Você já está conectada. ❤️‍🔥':'Cadastro iniciado! Confira seu e-mail para confirmar a conta e depois entre por aqui.';
+  }else{
+   let {error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;
+   msg.textContent='Login realizado! Bem-vinda de volta. ❤️‍🔥';
+  }
+  await refreshAuth();
+ }catch(error){msg.textContent=error.message||'Não foi possível concluir. Confira os dados.'}
+ finally{btn.disabled=false;btn.textContent=mode==='signup'?'CRIAR MINHA CONTA ↗':'ENTRAR NA MINHA CONTA ↗'}
+});
+async function refreshAuth(){
+ let {data:{session}}=await supabaseClient.auth.getSession(),logged=!!session;
+ document.getElementById('authPanel').classList.toggle('hidden',logged);
+ document.getElementById('loggedPanel').classList.toggle('hidden',!logged);
+ document.getElementById('loggedEmail').textContent=logged?session.user.email:'';
+ if(logged){await checkAdmin();fillBuyerData(session.user)}
+}
+async function signOut(){await supabaseClient.auth.signOut();setMode('login');await refreshAuth()}
+function fillBuyerData(user){
+ document.getElementById('buyerName').value=user.user_metadata?.full_name||'';
+ document.getElementById('buyerPhone').value=user.user_metadata?.phone||'';
+}
+async function checkAdmin(){
+ let {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;
+ let {data}=await supabaseClient.from('store_admins').select('user_id').eq('user_id',user.id).maybeSingle();
+ document.getElementById('adminPanel').classList.toggle('hidden',!data);
+ if(data)loadAdminOrders();
+}
+async function loadProducts(category=''){
+ let grid=document.getElementById('productGrid');grid.innerHTML='<p>Carregando peças...</p>';
+ let query=supabaseClient.from('products').select('*').eq('active',true).order('created_at',{ascending:false});
+ if(category)query=query.eq('category',category);
+ let {data,error}=await query;
+ if(error){grid.innerHTML='<p>As novidades estão sendo preparadas. ❤️‍🔥</p>';return}
+ products=data||[];
+ if(!products.length){grid.innerHTML='<p>Em breve, novidades por aqui. ❤️‍🔥</p>';return}
+ grid.innerHTML=products.map(p=>`<article class="product">
+ <div class="product-art">${p.image_url?`<img src="${safe(p.image_url)}" alt="${safe(p.name)}">`:'✦'}</div>
+ <div class="product-info"><strong>${safe(p.name)}</strong><small>${safe(p.description||p.category||'KB Closet')}</small>
+ <strong style="margin-top:10px;color:#ff9eae">${money(p.price)}</strong>
+ <button class="buy" ${Number(p.stock)<=0?'disabled':''} onclick="addToCart('${p.id}')">${Number(p.stock)<=0?'ESGOTADO':'ADICIONAR À SACOLA'}</button></div></article>`).join('');
+}
+function safe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function filterCategory(category){document.getElementById('productHeading').textContent=category.toUpperCase();loadProducts(category);document.getElementById('novidades').scrollIntoView({behavior:'smooth'})}
+function saveCart(){localStorage.setItem('kb_cart',JSON.stringify(cart));document.getElementById('cartCount').textContent=cart.reduce((n,i)=>n+i.quantity,0)}
+function addToCart(id){
+ let p=products.find(x=>String(x.id)===String(id));if(!p)return;
+ let item=cart.find(x=>String(x.id)===String(id));
+ if(item)item.quantity++;else cart.push({id:p.id,name:p.name,price:Number(p.price),quantity:1});
+ saveCart();document.getElementById('storeMessage').textContent='Peça adicionada à sua sacola! ❤️‍🔥'
+}
+function openCart(){renderCart();document.getElementById('cartLayer').classList.remove('hidden')}
+function closeCart(){document.getElementById('cartLayer').classList.add('hidden')}
+function renderCart(){
+ let el=document.getElementById('cartItems');
+ if(!cart.length)el.innerHTML='<p>Sua sacola está vazia.</p>';
+ else el.innerHTML=cart.map(i=>`<div class="cart-row"><strong>${safe(i.name)}</strong><br>${money(i.price)} × ${i.quantity}
+ <button onclick="changeQty('${i.id}',-1)">−</button><button onclick="changeQty('${i.id}',1)">+</button>
+ <button onclick="removeItem('${i.id}')">REMOVER</button></div>`).join('');
+ document.getElementById('cartSubtotal').textContent='Subtotal: '+money(cart.reduce((s,i)=>s+i.price*i.quantity,0));
+ updateDelivery();
+}
+function changeQty(id,n){let i=cart.find(x=>String(x.id)===String(id));if(i)i.quantity+=n;if(i&&i.quantity<=0)cart=cart.filter(x=>String(x.id)!==String(id));saveCart();renderCart()}
+function removeItem(id){cart=cart.filter(x=>String(x.id)!==String(id));saveCart();renderCart()}
+function updateDelivery(){
+ let zone=document.getElementById('buyerZone').value,rate=rates[zone],subtotal=cart.reduce((s,i)=>s+i.price*i.quantity,0);
+ document.getElementById('deliveryInfo').textContent=zone?(rate===null?'Frete a combinar via Uber Moto.':'Entrega: '+money(rate)+' • Total: '+money(subtotal+rate)):'Selecione a região para calcular a entrega.';
+}
+document.getElementById('buyerZone').addEventListener('change',updateDelivery);
+document.getElementById('checkoutForm').addEventListener('submit',async e=>{
+ e.preventDefault();let msg=document.getElementById('checkoutMessage');msg.textContent='';
+ let {data:{user}}=await supabaseClient.auth.getUser();
+ if(!user){msg.textContent='Entre na sua conta antes de finalizar o pedido.';closeCart();goToAccount();return}
+ if(!cart.length){msg.textContent='Sua sacola está vazia.';return}
+ let zone=document.getElementById('buyerZone').value,rate=rates[zone];
+ if(!zone){msg.textContent='Selecione sua região de entrega.';return}
+ if(rate===null){msg.textContent='Para outra região, fale com a KB Closet para combinar o frete antes de finalizar.';return}
+ let payload={p_customer_name:document.getElementById('buyerName').value.trim(),p_phone:document.getElementById('buyerPhone').value.trim(),p_address:document.getElementById('buyerAddress').value.trim(),p_zone:zone,p_delivery_fee:rate,p_items:cart.map(i=>({product_id:i.id,quantity:i.quantity}))};
+ let {data,error}=await supabaseClient.rpc('create_store_order',payload);
+ if(error){msg.textContent='Não foi possível registrar: '+error.message;return}
+ cart=[];saveCart();renderCart();
+ msg.textContent='Pedido registrado! A KB Closet vai entrar em contato para confirmar pagamento e entrega. Pedido: '+data;
+});
+async function loadMyOrders(){
+ document.getElementById('ordersPanel').classList.remove('hidden');let list=document.getElementById('ordersList');list.textContent='Carregando...';
+ let {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;
+ let {data,error}=await supabaseClient.from('orders').select('id,created_at,status,total,delivery_fee').eq('user_id',user.id).order('created_at',{ascending:false});
+ if(error){list.textContent='Não foi possível carregar seus pedidos.';return}
+ list.innerHTML=data.length?data.map(o=>`<div class="order-row">Pedido #${o.id}<br>${new Date(o.created_at).toLocaleDateString('pt-BR')} • ${safe(o.status)}<br>Total: ${money(o.total)}</div>`).join(''):'Você ainda não tem pedidos.';
+}
+document.getElementById('productForm').addEventListener('submit',async e=>{
+ e.preventDefault();let msg=document.getElementById('adminOrders');
+ let {error}=await supabaseClient.from('products').insert({name:document.getElementById('pName').value.trim(),category:document.getElementById('pCategory').value,price:Number(document.getElementById('pPrice').value),stock:Number(document.getElementById('pStock').value),image_url:document.getElementById('pImage').value.trim()||null,description:document.getElementById('pDescription').value.trim(),active:true});
+ if(error){msg.textContent='Erro ao cadastrar: '+error.message;return}
+ msg.textContent='Produto cadastrado!';e.target.reset();loadProducts();
+});
+async function loadAdminOrders(){
+ let el=document.getElementById('adminOrders');el.textContent='Carregando pedidos...';
+ let {data,error}=await supabaseClient.from('orders').select('id,created_at,customer_name,phone,status,total').order('created_at',{ascending:false}).limit(50);
+ if(error){el.textContent='Não foi possível carregar pedidos.';return}
+ el.innerHTML='<h3>Pedidos recebidos</h3>'+ (data.length?data.map(o=>`<div class="order-row">#${o.id} — ${safe(o.customer_name)}<br>${safe(o.phone)} • ${safe(o.status)} • ${money(o.total)}<br>${new Date(o.created_at).toLocaleString('pt-BR')}</div>`).join(''):'Nenhum pedido ainda.');
+}
+supabaseClient.auth.onAuthStateChange(()=>refreshAuth());
+refreshAuth();loadProducts();saveCart();
+</script>
 </body>
 </html>
