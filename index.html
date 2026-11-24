@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e32645">
+<title>KB CLOSET — Too hot to be basic.</title>
+<style>
+:root{--red:#e32645;--ink:#171313;--cream:#fff8f4;--muted:#806f70}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--cream);color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+a{color:inherit;text-decoration:none}.topline{background:var(--ink);color:white;text-align:center;padding:9px 12px;font-size:10px;letter-spacing:2px;text-transform:uppercase}
+header{padding:20px 5vw 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eadbd7;background:var(--cream);position:sticky;top:0;z-index:5}
+.logo{font-size:26px;font-weight:1000;letter-spacing:-1.5px}.logo span{color:var(--red)}nav{display:flex;gap:22px;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase}
+.cart{border:1px solid var(--ink);background:transparent;padding:10px 14px;font-weight:bold;font-size:11px;cursor:pointer}
+.hero{min-height:560px;background:var(--red);color:white;display:grid;grid-template-columns:1.05fr .95fr;overflow:hidden}
+.hero-copy{padding:9vw 5vw;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.kicker{font-size:11px;letter-spacing:3px;font-weight:bold;text-transform:uppercase}
+.hero h1{font-size:clamp(60px,10vw,150px);line-height:.78;letter-spacing:-.09em;margin:28px 0 24px;font-weight:1000;text-transform:uppercase}
+.hero h1 em{font-style:normal;color:var(--ink)}
+.hero p{max-width:340px;font-size:14px;line-height:1.6}
+.cta{display:inline-block;background:var(--ink);color:white;padding:16px 24px;margin-top:20px;font-size:11px;letter-spacing:1.5px;font-weight:bold}
+.hero-art{min-height:460px;display:flex;align-items:center;justify-content:center;position:relative;background:linear-gradient(145deg,#f8c4c8,#f7e5dc)}
+.hero-art:before{content:"";position:absolute;width:68%;height:82%;background:linear-gradient(145deg,#b51b37,#28151c);border-radius:48% 48% 8px 8px;transform:rotate(7deg);box-shadow:25px 25px 0 #f2a0a9}
+.hero-art:after{content:"🍒";position:absolute;font-size:clamp(100px,17vw,220px);filter:drop-shadow(8px 14px 0 #571523);transform:rotate(-12deg)}
+.stamp{position:absolute;z-index:1;right:8%;bottom:12%;background:var(--cream);color:var(--ink);border-radius:50%;width:105px;height:105px;display:grid;place-items:center;text-align:center;font-size:11px;font-weight:900;transform:rotate(12deg);line-height:1.3}
+.marquee{background:var(--ink);color:white;padding:15px 10px;text-align:center;font-weight:900;letter-spacing:3px;font-size:12px}
+.section{padding:70px 5vw}.section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:28px}.section h2{font-size:clamp(32px,5vw,60px);letter-spacing:-3px;text-transform:uppercase;margin:0}.section-head p{font-size:11px;color:var(--muted);letter-spacing:1px}
+.categories{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.cat{min-height:210px;background:#f2d6d2;display:flex;align-items:end;padding:22px;font-size:26px;font-weight:1000;letter-spacing:-1px;text-transform:uppercase;position:relative;overflow:hidden}.cat:nth-child(2){background:#e8b6bd}.cat:nth-child(3){background:#d7c4bd}.cat:after{content:"🍒";position:absolute;right:12px;top:10px;font-size:65px;opacity:.7}
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.product-photo{aspect-ratio:3/4;background:linear-gradient(145deg,#f3d9d5,#c96b79);display:grid;place-items:center;font-size:80px}.product:nth-child(2) .product-photo{background:linear-gradient(145deg,#d9c7c0,#7d4b50)}.product:nth-child(3) .product-photo{background:linear-gradient(145deg,#f4c6c9,#a52c45)}
+.product-info{display:flex;justify-content:space-between;gap:8px;padding:12px 0;font-size:12px;font-weight:bold;text-transform:uppercase}.product-info small{display:block;color:var(--muted);font-weight:normal;margin-top:5px}
+.note{background:#f0ded8;padding:55px 5vw;text-align:center}.note strong{font-size:clamp(30px,5vw,58px);letter-spacing:-2px;text-transform:uppercase}.note p{font-size:12px;letter-spacing:1px}
+footer{background:var(--ink);color:white;padding:38px 5vw;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:11px;letter-spacing:1px}
+@media(max-width:700px){header{padding:16px 4vw}.logo{font-size:22px}nav{gap:10px;font-size:9px}.hero{grid-template-columns:1fr}.hero-copy{padding:65px 7vw 45px}.hero-art{min-height:300px}.categories,.products{grid-template-columns:1fr 1fr}.cat{min-height:150px;font-size:20px}.section{padding:48px 5vw}.section-head p{display:none}.products .product:last-child{display:none}}
+</style>
+</head>
+<body>
+<div class="topline">new drops • looks que falam por você • brasil</div>
+<header>
+  <a class="logo" href="#">KB<span>.</span> CLOSET</a>
+  <nav><a href="#novidades">novidades</a><a href="#categorias">categorias</a><a href="#sobre">sobre</a></nav>
+  <button class="cart" onclick="alert('Em breve: sacola da KB Closet!')">SACOLA ♡</button>
+</header>
+<main>
+<section class="hero">
+  <div class="hero-copy">
+    <div class="kicker">the new girl uniform</div>
+    <h1>Too hot<br>to be <em>basic.</em></h1>
+    <p>Peças marcantes, atitude lá em cima e looks feitos pra chegar chegando.</p>
+    <a class="cta" href="#novidades">EXPLORE A KB →</a>
+  </div>
+  <div class="hero-art"><div class="stamp">KB<br>GIRLS<br>CLUB</div></div>
+</section>
+<div class="marquee">BOLD LOOKS • BIG ENERGY • KB CLOSET • BOLD LOOKS • BIG ENERGY</div>
+<section class="section" id="categorias">
+  <div class="section-head"><h2>Escolha sua vibe.</h2><p>SEU PRÓXIMO LOOK COMEÇA AQUI</p></div>
+  <div class="categories"><a class="cat" href="#novidades">Tops</a><a class="cat" href="#novidades">Conjuntos</a><a class="cat" href="#novidades">Vestidos</a></div>
+</section>
+<section class="section" id="novidades">
+  <div class="section-head"><h2>New in.</h2><p>CHEGOU PRA CAUSAR 🍒</p></div>
+  <div class="products">
+    <article class="product"><div class="product-photo">🍒</div><div class="product-info"><div>Cherry mood<small>Disponível em breve</small></div><span>—</span></div></article>
+    <article class="product"><div class="product-photo">♥</div><div class="product-info"><div>After hours<small>Disponível em breve</small></div><span>—</span></div></article>
+    <article class="product"><div class="product-photo">✦</div><div class="product-info"><div>Main character<small>Disponível em breve</small></div><span>—</span></div></article>
+  </div>
+</section>
+<section class="note" id="sobre"><strong>Não é só roupa.<br>É presença.</strong><p>KB CLOSET — TOO HOT TO BE BASIC.</p></section>
+</main>
+<footer><strong>KB. CLOSET</strong><span>FEITO PRA QUEM NÃO PASSA DESPERCEBIDA.</span><span>© KB CLOSET</span></footer>
+</body>
+</html>
