@@ -192,13 +192,13 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 <label>Endereço de entrega</label><textarea id="buyerAddress" required></textarea>
 <label>Região</label>
 <select id="buyerZone" required>
-<option value="">Selecione sua região</option>
-<option value="Samambaia Sul">Samambaia Sul — R$ 7</option>
-<option value="Samambaia Norte">Samambaia Norte — R$ 12</option>
+
+<option value="Samambaia Sul">Samambaia Sul — R$ 5</option>
+<option value="Samambaia Norte">Samambaia Norte — R$ 10</option>
 <option value="Riacho Fundo">Riacho Fundo — R$ 15</option>
 <option value="Recanto das Emas">Recanto das Emas — R$ 15</option>
 <option value="Ceilândia">Ceilândia — R$ 20</option>
-<option value="Taguatinga">Taguatinga — R$ 20</option>
+<option value="Taguatinga">Taguatinga — R$ 15</option>
 <option value="Outro">Outra região do DF — combinar</option>
 </select>
 <p id="deliveryInfo"></p>
@@ -215,7 +215,17 @@ const SUPABASE_URL='https://tbygkbxvpnjcjsvqueuv.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_RjqWz228EvN295E0zof1gA_J6Ju6FYi';
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let mode='signup',products=[],cart=JSON.parse(localStorage.getItem('kb_cart')||'[]');
-const rates={'Samambaia Sul':7,'Samambaia Norte':12,'Riacho Fundo':15,'Recanto das Emas':15,'Ceilândia':20,'Taguatinga':20,'Outro':null};
+
+const rates={
+ 'Samambaia Sul':5,
+ 'Samambaia Norte':10,
+ 'Riacho Fundo':15,
+ 'Recanto das Emas':15,
+ 'Ceilândia':20,
+ 'Taguatinga':15,
+ 'Outro':null
+};
+
 const money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function goToAccount(){document.querySelector('#conta').scrollIntoView({behavior:'smooth'})}
 function setMode(nextMode){
