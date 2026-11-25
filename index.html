@@ -100,6 +100,46 @@ input,select,textarea{width:100%;padding:14px;background:#10080b;border:1px soli
 .cart-row button{background:transparent;color:#ff9eae;margin-left:8px}
 footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:2px;display:flex;justify-content:space-between}
 @media(max-width:650px){header{padding:17px 5%}.nav{display:none}.hero{padding:58px 6%}h1{letter-spacing:-3px}.categories,.products{grid-template-columns:1fr 1fr}.category{min-height:120px;font-size:16px}.product-art{height:170px}.section{padding:42px 5%}.section-head{gap:15px;align-items:start;flex-direction:column}.panel-grid{grid-template-columns:1fr}footer{gap:12px;flex-direction:column}}
+
+.admin-quickbar{position:fixed;top:14px;right:14px;z-index:15}
+.admin-quickbar button{background:var(--red);color:#fff;padding:13px 16px;box-shadow:0 8px 28px #0008;font-size:11px;letter-spacing:1px}
+.admin-workspace{max-width:1200px;margin:0 auto;padding:0;background:transparent;border:0}
+.admin-topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:10px 0 24px;border-bottom:1px solid var(--line)}
+.admin-topbar h2{font-size:clamp(25px,4vw,40px);margin:8px 0;text-transform:uppercase;letter-spacing:-1.5px}
+.admin-topbar p,.admin-form-heading p,.admin-inventory-heading p{color:var(--muted);font-size:13px;margin:0;line-height:1.5}
+.admin-return{background:#2a141c;color:#fff;border:1px solid #73515b;padding:14px 18px;white-space:nowrap}
+.admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
+.admin-stat{background:#1a0d12;border:1px solid var(--line);padding:16px}
+.admin-stat strong{display:block;font-size:27px;color:#ff9eae}.admin-stat small{color:var(--muted);font-size:10px;letter-spacing:1px}
+.admin-section-tabs{display:flex;gap:10px;margin:20px 0}
+.admin-section-tab{flex:1;background:#2a141c;color:#e8d6d8;border:1px solid #57303d;padding:15px;letter-spacing:1px}
+.admin-section-tab.active{background:var(--red);border-color:var(--red);color:#fff}
+.admin-form,.admin-inventory{background:#1a0d12;border:1px solid var(--line);padding:22px;margin:18px 0}
+.admin-form-heading,.admin-inventory-heading{display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:20px}
+.admin-form-heading h3,.admin-inventory-heading h3{margin:0 0 8px;font-size:22px}
+.admin-form-actions{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.admin-form-actions .submit{margin-top:10px}
+.admin-image-note{font-size:11px;color:var(--muted);margin-top:8px}
+.admin-product-filters{display:flex;gap:8px;margin:15px 0}
+.admin-product-filter{flex:1;background:#2a141c;color:#e8d6d8;border:1px solid #57303d;padding:11px;font-size:10px}
+.admin-product-filter.active{background:var(--red);color:#fff;border-color:var(--red)}
+.admin-product-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.admin-product-card{display:grid;grid-template-columns:95px minmax(0,1fr);gap:14px;border:1px solid var(--line);padding:12px;background:#13090c;min-width:0}
+.admin-product-thumb{width:95px;height:120px;background:#2a141c;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#ff9eae;font-size:28px}
+.admin-product-thumb img{width:100%;height:100%;object-fit:cover}
+.admin-product-info{min-width:0}.admin-product-info strong{display:block;text-transform:uppercase;font-size:13px;overflow-wrap:anywhere}
+.admin-product-info small{display:block;color:var(--muted);font-size:11px;margin-top:6px;line-height:1.5}
+.admin-product-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.admin-product-actions button{padding:9px 10px;font-size:9px;margin:0}
+.admin-product-actions .remove-product{background:#8f1730;color:#fff;border:1px solid #b22b49}
+.admin-product-actions .restore-product{background:#254c3b;color:#fff;border:1px solid #3b775b}
+body.admin-mode{overflow:hidden}
+body.admin-mode .topline,body.admin-mode header,body.admin-mode main>.hero,body.admin-mode main>#categorias,body.admin-mode main>#novidades,body.admin-mode .account-wrap,body.admin-mode #ordersPanel,body.admin-mode footer,body.admin-mode .cart,body.admin-mode #adminQuickbar,body.admin-mode #productDetail{display:none!important}
+body.admin-mode #conta{display:block!important;position:fixed;inset:0;z-index:40;overflow:auto;padding:24px 5%;background:var(--deep);border:0}
+body.admin-mode #adminPanel{display:block!important;max-width:1200px;margin:0 auto;padding:0;border:0;background:transparent}
+body.admin-mode #adminPanel.hidden{display:block!important}
+@media(max-width:700px){.admin-topbar{align-items:flex-start;flex-direction:column}.admin-return{width:100%}.admin-stats{grid-template-columns:1fr 1fr}.admin-stat:last-child{grid-column:1/-1}.admin-product-list{grid-template-columns:1fr}.admin-product-card{grid-template-columns:78px minmax(0,1fr)}.admin-product-thumb{width:78px;height:105px}.admin-form,.admin-inventory{padding:15px}.admin-form-actions{grid-template-columns:1fr}.admin-section-tabs{flex-direction:column}.admin-product-filters{flex-wrap:wrap}.admin-product-filter{min-width:28%}}
+
 </style>
 </head>
 <body>
@@ -109,6 +149,8 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 <nav class="nav"><a href="#categorias">Categorias</a><a href="#novidades">Novidades</a><a href="#conta">Minha conta</a></nav>
 <button class="account-btn" onclick="goToAccount()">MINHA CONTA ↗</button>
 </header>
+
+<div id="adminQuickbar" class="admin-quickbar hidden"><button type="button" onclick="openAdminWorkspace()">ADMINISTRAR LOJA ↗</button></div>
 
 <main>
 <section class="hero">
@@ -196,23 +238,44 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 <div id="ordersPanel" class="panel hidden">
 <h3>MEUS PEDIDOS</h3><div id="ordersList">Carregando...</div>
 </div>
-<div id="adminPanel" class="panel hidden">
-<h3>PAINEL KB CLOSET</h3>
-<p>Cadastro de produtos e acompanhamento dos pedidos.</p>
-<form id="productForm">
+<div id="adminPanel" class="admin-workspace hidden">
+<div class="admin-topbar">
+<div><div class="eyebrow">KB CLOSET • BACKSTAGE</div><h2>PAINEL DE ADMINISTRAÇÃO</h2><p>Seu closet, seu estoque, suas regras.</p></div>
+<button type="button" class="admin-return" onclick="closeAdminWorkspace()">← VOLTAR À LOJA</button>
+</div>
+<div id="adminStats" class="admin-stats"></div>
+<div class="admin-section-tabs">
+<button type="button" id="adminProductsTab" class="admin-section-tab active" onclick="showAdminSection('products')">PRODUTOS & ESTOQUE</button>
+<button type="button" id="adminOrdersTab" class="admin-section-tab" onclick="showAdminSection('orders')">PEDIDOS</button>
+</div>
+<div id="adminProductsSection">
+<form id="productForm" class="admin-form">
+<div class="admin-form-heading"><div><h3 id="productFormTitle">ADICIONAR NOVA PEÇA</h3><p>Cadastre o produto e controle cada combinação de cor e tamanho.</p></div></div>
 <div class="panel-grid">
 <div><label>Nome do produto</label><input id="pName" required></div>
 <div><label>Categoria</label><select id="pCategory"><option>Vestidos</option><option>Conjuntos</option><option>Croppeds</option><option>New Drop</option></select></div>
 <div><label>Preço (R$)</label><input id="pPrice" type="number" min="0.01" step="0.01" required></div>
 <div><label>Cores (separe por vírgula)</label><input id="pColors" value="Única" placeholder="Preto, branco, vinho" required></div>
-<div><label><input id="pUniqueSize" type="checkbox" checked style="width:auto;margin-right:8px">Produto tamanho único</label><input id="pSizes" value="Tamanho único" placeholder="P, M, G, GG" required><small style="color:var(--muted)">Marque para cadastrar como tamanho único. Desmarque para informar P, M, G, GG etc.</small></div>
-<div><label>Estoque por cor e tamanho</label><small style="color:var(--muted)">Digite o estoque de cada combinação.</small><div id="variantStockMatrix" class="panel-grid"></div></div>
-<div><label>Fotos do produto (pode selecionar várias)</label><input id="pImages" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple><small style="color:var(--muted)">Escolha até 6 fotos. Até 10 MB por imagem.</small></div>
+<div><label><input id="pUniqueSize" type="checkbox" checked style="width:auto;margin-right:8px">Produto tamanho único</label><input id="pSizes" value="Tamanho único" placeholder="P, M, G, GG" required><small style="color:var(--muted)">Marque para tamanho único. Desmarque para informar P, M, G, GG etc.</small></div>
+<div><label>Estoque por cor e tamanho</label><small style="color:var(--muted)">Digite a quantidade de cada combinação.</small><div id="variantStockMatrix" class="panel-grid"></div></div>
+<div><label>Fotos do produto</label><input id="pImages" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple><small style="color:var(--muted)">Até 6 fotos, 10 MB por imagem. Ao editar, deixe vazio para manter as fotos atuais.</small><div id="currentProductImages" class="admin-image-note"></div></div>
 <div><label>Descrição</label><input id="pDescription"></div>
 </div>
-<button class="submit" type="submit">CADASTRAR PRODUTO</button>
+<div id="adminProductFormMessage" class="message" role="status"></div>
+<div class="admin-form-actions"><button class="submit" id="productSubmitButton" type="submit">CADASTRAR PRODUTO</button><button type="button" id="cancelProductEditButton" class="secondary hidden" onclick="resetAdminProductForm()">CANCELAR EDIÇÃO</button></div>
 </form>
-<div id="adminOrders">Pedidos aparecerão aqui.</div>
+<div class="admin-inventory">
+<div class="admin-inventory-heading"><div><h3>INVENTÁRIO DA KB</h3><p>Edite suas peças ou tire da vitrine sem perder o histórico.</p></div></div>
+<div class="admin-product-filters">
+<button type="button" class="admin-product-filter active" id="filterProductsActive" onclick="showAdminProductsTab('active')">ATIVOS</button>
+<button type="button" class="admin-product-filter" id="filterProductsArchived" onclick="showAdminProductsTab('archived')">ARQUIVADOS</button>
+<button type="button" class="admin-product-filter" id="filterProductsAll" onclick="showAdminProductsTab('all')">TODOS</button>
+</div>
+<div id="adminProductListMessage" class="message" role="status"></div>
+<div id="adminProductList" class="admin-product-list">Carregando inventário...</div>
+</div>
+</div>
+<div id="adminOrdersSection" class="hidden"><div id="adminOrders">Pedidos aparecerão aqui.</div></div>
 </div>
 </section>
 </main>
@@ -379,6 +442,7 @@ document.getElementById('recoveryForm').addEventListener('submit', async e => {
  document.getElementById('loggedPanel').classList.toggle('hidden',!logged);
  document.getElementById('loggedEmail').textContent=logged?session.user.email:'';
  if(logged){await checkAdmin();fillBuyerData(session.user)}
+ else{document.getElementById('adminQuickbar').classList.add('hidden');document.getElementById('adminPanel').classList.add('hidden');document.body.classList.remove('admin-mode')}
 }async function forgotPassword(){
   const email = document.getElementById('email').value.trim();
   const msg = document.getElementById('message');
@@ -401,16 +465,18 @@ document.getElementById('recoveryForm').addEventListener('submit', async e => {
     msg.textContent = 'Enviamos um link para seu e-mail! Confira sua caixa de entrada.';
   }
 }
- async function signOut(){await supabaseClient.auth.signOut();setMode('login');await refreshAuth()}
+ async function signOut(){await supabaseClient.auth.signOut();closeAdminWorkspace();setMode('login');await refreshAuth()}
 function fillBuyerData(user){
  document.getElementById('buyerName').value=user.user_metadata?.full_name||'';
  document.getElementById('buyerPhone').value=user.user_metadata?.phone||'';
 }
 async function checkAdmin(){
  let {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;
- let {data}=await supabaseClient.from('store_admins').select('user_id').eq('user_id',user.id).maybeSingle();
- document.getElementById('adminPanel').classList.toggle('hidden',!data);
- if(data)loadAdminOrders();
+ let {data,error}=await supabaseClient.from('store_admins').select('user_id').eq('user_id',user.id).maybeSingle();
+ const isAdmin=!!data&&!error;
+ document.getElementById('adminQuickbar').classList.toggle('hidden',!isAdmin);
+ document.getElementById('adminPanel').classList.add('hidden');
+ if(!isAdmin){document.body.classList.remove('admin-mode');return}
 }
 async function loadProducts(category=''){
  let grid=document.getElementById('productGrid');grid.innerHTML='<p>Carregando peças...</p>';
@@ -568,28 +634,146 @@ async function retryExistingPix(orderId){
 function parseList(id){return [...new Set(document.getElementById(id).value.split(',').map(x=>x.trim()).filter(Boolean))]}
 function renderVariantStockMatrix(){
  const colors=parseList('pColors'),sizes=parseList('pSizes'),box=document.getElementById('variantStockMatrix');if(!box)return;
- box.innerHTML=colors.flatMap(color=>sizes.map(size=>'<div><label>'+safe(color)+' / '+safe(size)+'</label><input type="number" min="0" step="1" value="1" class="variant-stock-input" data-color="'+safe(color)+'" data-size="'+safe(size)+'" required></div>')).join('');
+ const existing=editingProductId?(productVariants[editingProductId]||[]):[];
+ box.innerHTML=colors.flatMap(color=>sizes.map(size=>{
+  const old=existing.find(v=>v.color===color&&v.size===size);
+  return '<div><label>'+safe(color)+' / '+safe(size)+'</label><input type="number" min="0" step="1" value="'+(old?Number(old.stock):1)+'" class="variant-stock-input" data-color="'+safe(color)+'" data-size="'+safe(size)+'" data-variant-id="'+(old?old.id:'')+'" required></div>';
+ })).join('');
 }
 const uniqueSize=document.getElementById('pUniqueSize'),sizeInput=document.getElementById('pSizes');uniqueSize.addEventListener('change',()=>{if(uniqueSize.checked){sizeInput.value='Tamanho único';sizeInput.disabled=true}else{sizeInput.disabled=false;sizeInput.value='';sizeInput.focus()}renderVariantStockMatrix()});sizeInput.disabled=true;document.getElementById('pColors').addEventListener('input',renderVariantStockMatrix);sizeInput.addEventListener('input',renderVariantStockMatrix);renderVariantStockMatrix();
+let editingProductId=null,adminProducts=[],adminProductsTab='active',adminOrdersCache=[];
+function renderAdminStats(){
+ const active=adminProducts.filter(p=>p.active).length,archived=adminProducts.length-active;
+ const pending=adminOrdersCache.filter(o=>!['Concluído','Cancelado'].includes(o.status)).length;
+ document.getElementById('adminStats').innerHTML='<div class="admin-stat"><strong>'+active+'</strong><small>PRODUTOS NA VITRINE</small></div><div class="admin-stat"><strong>'+archived+'</strong><small>PRODUTOS ARQUIVADOS</small></div><div class="admin-stat"><strong>'+pending+'</strong><small>PEDIDOS EM ANDAMENTO</small></div>';
+}
+function openAdminWorkspace(){
+ if(document.getElementById('adminQuickbar').classList.contains('hidden'))return;
+ document.body.classList.add('admin-mode');
+ document.getElementById('adminQuickbar').classList.add('hidden');
+ document.getElementById('adminPanel').classList.remove('hidden');
+ showAdminSection('products');
+ loadAdminProducts();loadAdminOrders();
+}
+function closeAdminWorkspace(){
+ document.body.classList.remove('admin-mode');
+ document.getElementById('adminPanel').classList.add('hidden');
+ document.getElementById('adminQuickbar').classList.remove('hidden');
+}
+function showAdminSection(section){
+ const products=section==='products';
+ document.getElementById('adminProductsSection').classList.toggle('hidden',!products);
+ document.getElementById('adminOrdersSection').classList.toggle('hidden',products);
+ document.getElementById('adminProductsTab').classList.toggle('active',products);
+ document.getElementById('adminOrdersTab').classList.toggle('active',!products);
+ if(products)loadAdminProducts();else loadAdminOrders();
+}
+async function loadAdminProducts(){
+ const list=document.getElementById('adminProductList'),msg=document.getElementById('adminProductListMessage');
+ if(!list)return;list.innerHTML='<p>Carregando inventário...</p>';msg.textContent='';
+ const {data,error}=await supabaseClient.from('products').select('*').order('created_at',{ascending:false});
+ if(error){list.innerHTML='';msg.textContent='Não consegui carregar os produtos: '+error.message;return}
+ adminProducts=data||[];
+ if(adminProducts.length){
+  const {data:variants,error:variantError}=await supabaseClient.from('product_variants').select('id,product_id,color,size,stock').in('product_id',adminProducts.map(p=>p.id));
+  if(variantError){msg.textContent='Produtos carregados, mas não consegui ler o estoque: '+variantError.message;return}
+  productVariants={};(variants||[]).forEach(v=>(productVariants[v.product_id]||(productVariants[v.product_id]=[])).push(v));
+ }else productVariants={};
+ renderAdminStats();renderAdminProducts(); 
+}
+function renderAdminProducts(){
+ const list=document.getElementById('adminProductList');if(!list)return;
+ ['active','archived','all'].forEach(tab=>{const el=document.getElementById('filterProducts'+tab.charAt(0).toUpperCase()+tab.slice(1));if(el)el.classList.toggle('active',adminProductsTab===tab)});
+ const shown=adminProducts.filter(p=>adminProductsTab==='all'||(adminProductsTab==='active'?!!p.active:!p.active));
+ if(!shown.length){list.innerHTML='<p>Nenhum produto nesta lista.</p>';return}
+ list.innerHTML=shown.map(p=>{
+  const vars=productVariants[p.id]||[],stock=vars.reduce((sum,v)=>sum+Number(v.stock||0),0),photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
+  const image=photos.length?'<img src="'+safe(photos[0])+'" alt="'+safe(p.name)+'">':'✦';
+  return '<article class="admin-product-card"><div class="admin-product-thumb">'+image+'</div><div class="admin-product-info"><strong>'+safe(p.name)+'</strong><small>'+safe(p.category||'Sem categoria')+' • '+money(p.price)+'<br>Estoque: '+stock+' unidade(s)<br>'+(p.active?'Na vitrine':'Arquivado')+'</small><div class="admin-product-actions"><button type="button" class="secondary" onclick="editAdminProduct(\''+p.id+'\')">EDITAR</button><button type="button" class="'+(p.active?'remove-product':'restore-product')+'" onclick="deleteOrArchiveAdminProduct(\''+p.id+'\')">'+(p.active?'REMOVER DA LOJA':'REPUBLICAR')+'</button></div></div></article>';
+ }).join('');
+}
+function showAdminProductsTab(tab){adminProductsTab=tab;renderAdminProducts()}
+function editAdminProduct(id){
+ const p=adminProducts.find(x=>String(x.id)===String(id));if(!p)return;
+ editingProductId=p.id;
+ const vars=productVariants[p.id]||[],colors=[...new Set(vars.map(v=>v.color))],sizes=[...new Set(vars.map(v=>v.size))];
+ document.getElementById('pName').value=p.name||'';document.getElementById('pCategory').value=p.category||'New Drop';document.getElementById('pPrice').value=p.price||'';
+ document.getElementById('pColors').value=colors.join(', ')||'Única';document.getElementById('pSizes').value=sizes.join(', ')||'Tamanho único';
+ const unique=sizes.length===1&&sizes[0]==='Tamanho único';document.getElementById('pUniqueSize').checked=unique;document.getElementById('pSizes').disabled=unique;
+ document.getElementById('pDescription').value=p.description||'';document.getElementById('pImages').value='';
+ const photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
+ document.getElementById('currentProductImages').textContent=photos.length?photos.length+' foto(s) cadastrada(s). Se selecionar novas, elas substituirão a galeria atual.':'Nenhuma foto cadastrada.';
+ document.getElementById('productFormTitle').textContent='EDITAR: '+p.name.toUpperCase();document.getElementById('productSubmitButton').textContent='SALVAR ALTERAÇÕES';document.getElementById('cancelProductEditButton').classList.remove('hidden');
+ renderVariantStockMatrix();showAdminSection('products');document.getElementById('productForm').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function resetAdminProductForm(){
+ editingProductId=null;const form=document.getElementById('productForm');form.reset();
+ document.getElementById('pColors').value='Única';document.getElementById('pSizes').value='Tamanho único';document.getElementById('pSizes').disabled=true;document.getElementById('pUniqueSize').checked=true;
+ document.getElementById('currentProductImages').textContent='';document.getElementById('productFormTitle').textContent='ADICIONAR NOVA PEÇA';document.getElementById('productSubmitButton').textContent='CADASTRAR PRODUTO';document.getElementById('cancelProductEditButton').classList.add('hidden');document.getElementById('adminProductFormMessage').textContent='';
+ renderVariantStockMatrix();
+}
+async function deleteOrArchiveAdminProduct(id){
+ const p=adminProducts.find(x=>String(x.id)===String(id));if(!p)return;
+ if(!p.active){
+  if(!confirm('Republicar '+p.name+' na vitrine da KB Closet?'))return;
+  const {error}=await supabaseClient.from('products').update({active:true}).eq('id',id);
+  if(error){document.getElementById('adminProductListMessage').textContent='Não consegui republicar: '+error.message;return}
+  document.getElementById('adminProductListMessage').textContent='Produto republicado na loja!';await loadAdminProducts();await loadProducts();return;
+ }
+ if(!confirm('Remover '+p.name+' da vitrine? Se já houver venda registrada, ele será arquivado para preservar o histórico.'))return;
+ const {count,error:countError}=await supabaseClient.from('order_items').select('id',{count:'exact',head:true}).eq('product_id',id);
+ if(countError){document.getElementById('adminProductListMessage').textContent='Não consegui verificar o histórico de vendas: '+countError.message;return}
+ if(Number(count||0)>0){
+  const {error}=await supabaseClient.from('products').update({active:false}).eq('id',id);
+  if(error){document.getElementById('adminProductListMessage').textContent='Não consegui arquivar: '+error.message;return}
+  document.getElementById('adminProductListMessage').textContent='Produto arquivado. O histórico de pedidos foi preservado.';
+ }else{
+  const {error:variantError}=await supabaseClient.from('product_variants').delete().eq('product_id',id);
+  if(variantError){document.getElementById('adminProductListMessage').textContent='Não consegui remover o estoque do produto: '+variantError.message;return}
+  const {error}=await supabaseClient.from('products').delete().eq('id',id);
+  if(error){
+   const {error:archiveError}=await supabaseClient.from('products').update({active:false}).eq('id',id);
+   document.getElementById('adminProductListMessage').textContent=archiveError?'Falha ao excluir: '+error.message:'Produto arquivado para não perder dados relacionados.';
+  }else document.getElementById('adminProductListMessage').textContent='Produto excluído do inventário.';
+ }
+ await loadAdminProducts();await loadProducts();
+}
 document.getElementById('productForm').addEventListener('submit',async e=>{
- e.preventDefault();const msg=document.getElementById('adminOrders'),submit=e.target.querySelector('button[type="submit"]'),files=Array.from(document.getElementById('pImages').files||[]),colors=parseList('pColors'),sizes=parseList('pSizes'),inputs=[...document.querySelectorAll('.variant-stock-input')];
+ e.preventDefault();const msg=document.getElementById('adminProductFormMessage'),submit=document.getElementById('productSubmitButton'),files=Array.from(document.getElementById('pImages').files||[]),colors=parseList('pColors'),sizes=parseList('pSizes'),inputs=[...document.querySelectorAll('.variant-stock-input')],current=editingProductId?adminProducts.find(p=>String(p.id)===String(editingProductId)):null;
+ if(editingProductId&&!current){msg.textContent='Não encontrei esse produto. Atualize o inventário e tente novamente.';return}
  if(!colors.length||!sizes.length){msg.textContent='Informe pelo menos uma cor e um tamanho.';return}
  if(files.length>6){msg.textContent='Escolha no máximo 6 fotos.';return}
  if(files.some(f=>f.size>10*1024*1024)){msg.textContent='Cada foto precisa ter até 10 MB.';return}
  const variants=inputs.map(x=>({color:x.dataset.color,size:x.dataset.size,stock:Number(x.value)}));
  if(variants.some(v=>!Number.isInteger(v.stock)||v.stock<0)){msg.textContent='Confira o estoque de cada combinação.';return}
- submit.disabled=true;submit.textContent='ENVIANDO...';msg.textContent='Enviando fotos e cadastrando variações...';const imageUrls=[];
+ submit.disabled=true;submit.textContent='SALVANDO...';msg.textContent='Salvando produto, fotos e estoque...';
+ let imageUrls=current?(Array.isArray(current.image_urls)&&current.image_urls.length?current.image_urls:(current.image_url?[current.image_url]:[])):[];
  for(const file of files){const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_'),path='products/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'-'+safeName;
   const {error:uploadError}=await supabaseClient.storage.from('kb-products').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
-  if(uploadError){msg.textContent='Erro ao enviar foto: '+uploadError.message;submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';return}
+  if(uploadError){msg.textContent='Erro ao enviar foto: '+uploadError.message;submit.disabled=false;submit.textContent=current?'SALVAR ALTERAÇÕES':'CADASTRAR PRODUTO';return}
   const {data:publicData}=supabaseClient.storage.from('kb-products').getPublicUrl(path);imageUrls.push(publicData.publicUrl);
  }
- const totalStock=variants.reduce((sum,v)=>sum+v.stock,0);
- const {data:product,error}=await supabaseClient.from('products').insert({name:document.getElementById('pName').value.trim(),category:document.getElementById('pCategory').value,price:Number(document.getElementById('pPrice').value),stock:totalStock,image_url:imageUrls[0]||null,image_urls:imageUrls,description:document.getElementById('pDescription').value.trim(),active:true}).select('id').single();
- if(error){msg.textContent='Erro ao cadastrar: '+error.message;submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';return}
- const {error:variantError}=await supabaseClient.from('product_variants').insert(variants.map(v=>({...v,product_id:product.id})));
- if(variantError){await supabaseClient.from('products').delete().eq('id',product.id);msg.textContent='Erro ao salvar cor/tamanho: '+variantError.message;submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';return}
- msg.textContent='Produto cadastrado com '+imageUrls.length+' foto(s) e '+variants.length+' combinações!';e.target.reset();uniqueSize.checked=true;sizeInput.value='Tamanho único';sizeInput.disabled=true;renderVariantStockMatrix();submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';loadProducts();
+ if(files.length)imageUrls=imageUrls.slice(-files.length);
+ const totalStock=variants.reduce((sum,v)=>sum+v.stock,0),productPayload={name:document.getElementById('pName').value.trim(),category:document.getElementById('pCategory').value,price:Number(document.getElementById('pPrice').value),stock:totalStock,image_url:imageUrls[0]||null,image_urls:imageUrls,description:document.getElementById('pDescription').value.trim(),active:current?current.active:true};
+ let productId=editingProductId,productError=null;
+ if(current){const result=await supabaseClient.from('products').update(productPayload).eq('id',productId);productError=result.error}
+ else{const result=await supabaseClient.from('products').insert(productPayload).select('id').single();productError=result.error;productId=result.data?.id}
+ if(productError){msg.textContent='Erro ao salvar produto: '+productError.message;submit.disabled=false;submit.textContent=current?'SALVAR ALTERAÇÕES':'CADASTRAR PRODUTO';return}
+ if(current){
+  const oldVariants=productVariants[productId]||[];
+  for(const v of variants){
+   const old=oldVariants.find(x=>x.color===v.color&&x.size===v.size);
+   const result=old?await supabaseClient.from('product_variants').update({stock:v.stock}).eq('id',old.id):await supabaseClient.from('product_variants').insert({...v,product_id:productId});
+   if(result.error){msg.textContent='Produto atualizado, mas houve erro ao salvar uma combinação de estoque: '+result.error.message+' Confira o inventário antes de sair.';submit.disabled=false;submit.textContent='SALVAR ALTERAÇÕES';await loadAdminProducts();return}
+  }
+  const removed=oldVariants.filter(old=>!variants.some(v=>v.color===old.color&&v.size===old.size));
+  if(removed.length){const {error}=await supabaseClient.from('product_variants').delete().in('id',removed.map(v=>v.id));if(error){msg.textContent='Produto salvo, mas não consegui remover combinações antigas: '+error.message;submit.disabled=false;submit.textContent='SALVAR ALTERAÇÕES';await loadAdminProducts();return}}
+ }else{
+  const {error:variantError}=await supabaseClient.from('product_variants').insert(variants.map(v=>({...v,product_id:productId})));
+  if(variantError){await supabaseClient.from('products').delete().eq('id',productId);msg.textContent='Erro ao salvar cor/tamanho: '+variantError.message;submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';return}
+ }
+ msg.textContent=current?'Produto atualizado com sucesso!':'Produto cadastrado com '+imageUrls.length+' foto(s) e '+variants.length+' combinações!';
+ resetAdminProductForm();submit.disabled=false;await loadAdminProducts();loadProducts();
 });
 
 let activeAdminOrderId=null,adminOrdersTab='active';
@@ -597,7 +781,7 @@ async function loadAdminOrders(){
  const el=document.getElementById('adminOrders');el.textContent='Carregando pedidos...';
  const {data,error}=await supabaseClient.from('orders').select('id,created_at,customer_name,customer_phone,phone,status,total,payment_method,payment_status,confirmation_email_sent_at').order('created_at',{ascending:false}).limit(100);
  if(error){el.textContent='Não foi possível carregar pedidos.';return}
- const orders=data||[],active=orders.filter(o=>o.status!=='Cancelado'),cancelled=orders.filter(o=>o.status==='Cancelado');
+ const orders=data||[];adminOrdersCache=orders;renderAdminStats();const active=orders.filter(o=>o.status!=='Cancelado'),cancelled=orders.filter(o=>o.status==='Cancelado');
  const card=o=>`<div class="admin-order" role="button" tabindex="0" onclick="openAdminOrder('${o.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAdminOrder('${o.id}')}"><strong>#${o.id} — ${safe(o.customer_name)}</strong><br>${safe(o.customer_phone||o.phone||'Sem telefone')} • ${money(o.total)}<br><small>Pagamento: ${safe(paymentName(o.payment_method))} • ${safe(o.payment_status||'Aguardando confirmação')}</small><br><small>${new Date(o.created_at).toLocaleString('pt-BR')} • Abrir detalhes ↗</small></div>`;
  el.innerHTML='<h3>Pedidos da loja</h3><div class="admin-order-tabs"><button type="button" class="admin-order-tab '+(adminOrdersTab==='active'?'active':'')+'" onclick="showAdminOrdersTab(\'active\')">PEDIDOS ATIVOS ('+active.length+')</button><button type="button" class="admin-order-tab '+(adminOrdersTab==='cancelled'?'active':'')+'" onclick="showAdminOrdersTab(\'cancelled\')">PEDIDOS CANCELADOS ('+cancelled.length+')</button></div><div class="admin-order-list">'+((adminOrdersTab==='active'?active:cancelled).length?(adminOrdersTab==='active'?active:cancelled).map(card).join(''):(adminOrdersTab==='active'?'Nenhum pedido ativo.':'Nenhum pedido cancelado.'))+'</div>';
 }
