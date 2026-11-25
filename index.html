@@ -373,7 +373,7 @@ async function loadProducts(category=''){
  if(!products.length){grid.innerHTML='<p>Em breve, novidades por aqui. ❤️‍🔥</p>';return}
  const {data:variants}=await supabaseClient.from('product_variants').select('id,product_id,color,size,stock').in('product_id',products.map(p=>p.id));
  productVariants={};(variants||[]).forEach(v=>(productVariants[v.product_id]||(productVariants[v.product_id]=[])).push(v));
- grid.innerHTML=products.map(renderProductCard).join('');
+ grid.innerHTML=products.map(renderProductCard).join('');products.forEach(p=>{if((productVariants[p.id]||[]).length)updateVariantOptions(p.id)});
 }
 function renderProductCard(p){
  const photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]),vars=productVariants[p.id]||[];
