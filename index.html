@@ -246,6 +246,7 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 <button type="button" class="copy-pix" onclick="copyPixCode()">COPIAR CÓDIGO PIX</button>
 <a id="pixTicketLink" class="hidden" target="_blank" rel="noopener">ABRIR PAGAMENTO NO MERCADO PAGO ↗</a>
 <p id="pixOrderStatus">Aguardando pagamento.</p>
+<button type="button" id="retryPixButton" class="copy-pix hidden" onclick="retryPixPayment()">GERAR PIX NOVAMENTE</button>
 </div>
 </div>
 </div>
@@ -457,9 +458,32 @@ function updateDelivery(){
  document.getElementById('deliveryInfo').textContent=zone?(rate===null?'Frete a combinar via Uber Moto.':'Entrega: '+money(rate)+' • Total: '+money(subtotal+rate)):'Selecione a região para calcular a entrega.';
 }
 document.getElementById('buyerZone').addEventListener('change',updateDelivery);
+let currentPixOrder=null;
+function showPixPanel(){document.getElementById('pixPanel').classList.remove('hidden')}
+async function generatePixForOrder(orderId){
+ currentPixOrder=orderId;showPixPanel();
+ const status=document.getElementById('pixOrderStatus'),retry=document.getElementById('retryPixButton');
+ retry.classList.add('hidden');status.textContent='Gerando Pix para o pedido #'+orderId+'...';
+ const {data:pixData,error:pixError}=await supabaseClient.functions.invoke('create-pix',{body:{order_id:orderId}});
+ if(pixError||!pixData||!pixData.qr_code){
+  status.textContent=(pixData&&pixData.error)||'Não foi possível gerar o Pix agora. Seu pedido continua registrado.';
+  retry.classList.remove('hidden');return null;
+ }
+ document.getElementById('pixQrImage').src=pixData.qr_code_base64?'data:image/png;base64,'+pixData.qr_code_base64:'';
+ document.getElementById('pixQrImage').classList.toggle('hidden',!pixData.qr_code_base64);
+ document.getElementById('pixCode').value=pixData.qr_code;
+ const ticket=document.getElementById('pixTicketLink');
+ if(pixData.ticket_url){ticket.href=pixData.ticket_url;ticket.classList.remove('hidden')}else ticket.classList.add('hidden');
+ status.textContent='Pix gerado para o pedido #'+orderId+'. A confirmação pode levar alguns instantes após o pagamento.';
+ return pixData;
+}
+async function retryPixPayment(){
+ const button=document.getElementById('retryPixButton');if(!currentPixOrder)return;button.disabled=true;
+ try{const result=await generatePixForOrder(currentPixOrder);if(result)document.getElementById('checkoutMessage').textContent='Pix gerado para o pedido #'+currentPixOrder+'. Faça o pagamento pelo QR Code ou código copia e cola.'}
+ finally{button.disabled=false}
+}
 async function copyPixCode(){
- const code=document.getElementById('pixCode').value;
- if(!code)return;
+ const code=document.getElementById('pixCode').value;if(!code)return;
  try{await navigator.clipboard.writeText(code);document.getElementById('pixOrderStatus').textContent='Código Pix copiado! Abra o app do banco para pagar.'}
  catch{document.getElementById('pixOrderStatus').textContent='Selecione e copie o código Pix manualmente.'}
 }
@@ -481,15 +505,8 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
  cart=[];saveCart();renderCart();
  if(payment==='pix'){
    msg.textContent='Pedido #'+data+' registrado. Preparando seu Pix...';
-   const {data:pixData,error:pixError}=await supabaseClient.functions.invoke('create-pix',{body:{order_id:data}});
-   if(pixError||!pixData||!pixData.qr_code){msg.textContent='Pedido #'+data+' foi registrado, mas o Pix não foi gerado. Não faça outro pedido; entre em contato com a KB Closet para resolver.';return}
-   document.getElementById('pixPanel').classList.remove('hidden');
-   document.getElementById('pixQrImage').src=pixData.qr_code_base64?'data:image/png;base64,'+pixData.qr_code_base64:'';
-   document.getElementById('pixQrImage').classList.toggle('hidden',!pixData.qr_code_base64);
-   document.getElementById('pixCode').value=pixData.qr_code;
-   const ticket=document.getElementById('pixTicketLink');
-   if(pixData.ticket_url){ticket.href=pixData.ticket_url;ticket.classList.remove('hidden')}else ticket.classList.add('hidden');
-   document.getElementById('pixOrderStatus').textContent='Pix gerado para o pedido #'+data+'. A confirmação pode levar alguns instantes após o pagamento.';
+   const pixData=await generatePixForOrder(data);
+   if(!pixData){msg.textContent='Pedido #'+data+' registrado. Você pode tentar gerar o Pix novamente no painel, sem refazer o pedido.';return}
    msg.textContent='Pedido #'+data+' criado. Faça o pagamento pelo QR Code ou código Pix abaixo.';
    return;
  }
