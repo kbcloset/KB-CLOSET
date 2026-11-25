@@ -61,6 +61,11 @@ input,select,textarea{width:100%;padding:14px;background:#10080b;border:1px soli
 .cart-box{position:fixed;inset:0;background:#000b;z-index:10;display:flex;justify-content:flex-end}
 .cart-content{background:#1a0d12;width:min(100%,430px);height:100%;overflow:auto;padding:24px}
 .cart-row,.order-row{border-bottom:1px solid var(--line);padding:14px 0;line-height:1.6}
+.pix-panel{margin-top:18px;padding:18px;border:1px solid #57303d;background:#10080b;text-align:center}
+.pix-panel img{display:block;width:220px;max-width:100%;height:auto;margin:15px auto;background:white;padding:8px}
+.pix-code{font-size:12px;min-height:90px;resize:vertical}
+.copy-pix{width:100%;padding:14px;background:#fff4ec;color:#13090c;margin-top:10px}
+.pix-panel a{display:inline-block;margin-top:12px;color:#ff9eae}
 .cart-row button{background:transparent;color:#ff9eae;margin-left:8px}
 footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:2px;display:flex;justify-content:space-between}
 @media(max-width:650px){header{padding:17px 5%}.nav{display:none}.hero{padding:58px 6%}h1{letter-spacing:-3px}.categories,.products{grid-template-columns:1fr 1fr}.category{min-height:120px;font-size:16px}.product-art{height:170px}.section{padding:42px 5%}.section-head{gap:15px;align-items:start;flex-direction:column}.panel-grid{grid-template-columns:1fr}footer{gap:12px;flex-direction:column}}
@@ -204,7 +209,7 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 <label>Forma de pagamento</label>
 <select id="buyerPayment" required>
 <option value="">Selecione a forma de pagamento</option>
-<option value="pix">Pix — combinar pelo WhatsApp</option>
+<option value="pix">Pix pelo site (QR Code)</option>
 <option value="card_delivery">Cartão de crédito na entrega (Ton)</option>
 <option value="card_link">Cartão de crédito por link da Ton</option>
 </select>
@@ -212,6 +217,15 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 <button class="submit" type="submit">FINALIZAR PEDIDO ↗</button>
 </form>
 <div class="message" id="checkoutMessage"></div>
+<div id="pixPanel" class="pix-panel hidden">
+<h3>PIX DO SEU PEDIDO</h3>
+<p>Escaneie o QR Code no aplicativo do seu banco ou copie o código Pix abaixo.</p>
+<img id="pixQrImage" alt="QR Code Pix para pagamento">
+<textarea id="pixCode" class="pix-code" readonly aria-label="Código Pix copia e cola"></textarea>
+<button type="button" class="copy-pix" onclick="copyPixCode()">COPIAR CÓDIGO PIX</button>
+<a id="pixTicketLink" class="hidden" target="_blank" rel="noopener">ABRIR PAGAMENTO NO MERCADO PAGO ↗</a>
+<p id="pixOrderStatus">Aguardando pagamento.</p>
+</div>
 </div>
 </div>
 
@@ -233,7 +247,7 @@ const rates={
  'Outro':null
 };
 
-function paymentName(method){return ({pix:'Pix — confirmar pelo WhatsApp',card_delivery:'Cartão na entrega (Ton)',card_link:'Cartão por link (Ton)'})[method]||'A combinar'}
+function paymentName(method){return ({pix:'Pix pelo site (Mercado Pago)',card_delivery:'Cartão na entrega (Ton)',card_link:'Cartão por link (Ton)'})[method]||'A combinar'}
 const money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function goToAccount(){document.querySelector('#conta').scrollIntoView({behavior:'smooth'})}
 function setMode(nextMode){
@@ -383,6 +397,12 @@ function updateDelivery(){
  document.getElementById('deliveryInfo').textContent=zone?(rate===null?'Frete a combinar via Uber Moto.':'Entrega: '+money(rate)+' • Total: '+money(subtotal+rate)):'Selecione a região para calcular a entrega.';
 }
 document.getElementById('buyerZone').addEventListener('change',updateDelivery);
+async function copyPixCode(){
+ const code=document.getElementById('pixCode').value;
+ if(!code)return;
+ try{await navigator.clipboard.writeText(code);document.getElementById('pixOrderStatus').textContent='Código Pix copiado! Abra o app do banco para pagar.'}
+ catch{document.getElementById('pixOrderStatus').textContent='Selecione e copie o código Pix manualmente.'}
+}
 document.getElementById('checkoutForm').addEventListener('submit',async e=>{
  e.preventDefault();let msg=document.getElementById('checkoutMessage');msg.textContent='';
  let {data:{user}}=await supabaseClient.auth.getUser();
@@ -397,10 +417,24 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
  let {data,error}=await supabaseClient.rpc('create_store_order',payload);
  if(error){msg.textContent='Não foi possível registrar: '+error.message;return}
  let {error:paymentError}=await supabaseClient.rpc('set_order_payment_method',{p_order_id:data,p_payment_method:payment});
+ if(paymentError){msg.textContent='Pedido #'+data+' foi criado, mas não conseguimos salvar a forma de pagamento. Não envie outro pedido; fale com a KB Closet.';return}
  cart=[];saveCart();renderCart();
- if(paymentError){msg.textContent='Pedido #'+data+' registrado, mas a forma de pagamento não foi salva. Fale com a KB Closet para confirmar.';return}
- let paymentLabel={pix:'Pix (confirmar pelo WhatsApp)',card_delivery:'Cartão na entrega pela Ton',card_link:'Cartão por link da Ton'}[payment];
- msg.textContent='Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet vai confirmar entrega e pagamento.';
+ if(payment==='pix'){
+   msg.textContent='Pedido #'+data+' registrado. Preparando seu Pix...';
+   const {data:pixData,error:pixError}=await supabaseClient.functions.invoke('create-pix',{body:{order_id:data}});
+   if(pixError||!pixData||!pixData.qr_code){msg.textContent='Pedido #'+data+' foi registrado, mas o Pix não foi gerado. Não faça outro pedido; entre em contato com a KB Closet para resolver.';return}
+   document.getElementById('pixPanel').classList.remove('hidden');
+   document.getElementById('pixQrImage').src=pixData.qr_code_base64?'data:image/png;base64,'+pixData.qr_code_base64:'';
+   document.getElementById('pixQrImage').classList.toggle('hidden',!pixData.qr_code_base64);
+   document.getElementById('pixCode').value=pixData.qr_code;
+   const ticket=document.getElementById('pixTicketLink');
+   if(pixData.ticket_url){ticket.href=pixData.ticket_url;ticket.classList.remove('hidden')}else ticket.classList.add('hidden');
+   document.getElementById('pixOrderStatus').textContent='Pix gerado para o pedido #'+data+'. A confirmação pode levar alguns instantes após o pagamento.';
+   msg.textContent='Pedido #'+data+' criado. Faça o pagamento pelo QR Code ou código Pix abaixo.';
+   return;
+ }
+ let paymentLabel={card_delivery:'Cartão na entrega pela Ton',card_link:'Cartão por link da Ton'}[payment];
+ msg.textContent='Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet combinará o pagamento conforme a opção escolhida.';
 });
 async function loadMyOrders(){
  document.getElementById('ordersPanel').classList.remove('hidden');let list=document.getElementById('ordersList');list.textContent='Carregando...';
