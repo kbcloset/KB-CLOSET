@@ -36,6 +36,10 @@ h1 em{font-style:normal;color:var(--red)}
 .product{border:1px solid var(--line);background:#1a0d12;overflow:hidden}
 .product-art{height:230px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#421321,#1b0b11);font-size:55px}
 .product-art img{width:100%;height:100%;object-fit:cover}
+.product-gallery{position:relative;width:100%;height:100%}
+.gallery-control{position:absolute;top:50%;transform:translateY(-50%);background:#13090ccc;color:white;padding:10px 12px;border-radius:50%;font-size:18px}
+.gallery-control.prev{left:8px}.gallery-control.next{right:8px}
+.gallery-count{position:absolute;bottom:8px;right:8px;background:#13090ccc;color:white;padding:5px 8px;border-radius:20px;font-size:10px}
 .product-info{padding:15px}.product-info strong{display:block;font-size:13px;text-transform:uppercase}
 .product-info small{color:var(--muted);display:block;margin-top:7px}
 .buy{margin-top:13px;width:100%;padding:12px;background:var(--red);color:white;font-size:10px;letter-spacing:1px}
@@ -174,7 +178,7 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 <div><label>Categoria</label><select id="pCategory"><option>Vestidos</option><option>Conjuntos</option><option>Croppeds</option><option>New Drop</option></select></div>
 <div><label>Preço (R$)</label><input id="pPrice" type="number" min="0.01" step="0.01" required></div>
 <div><label>Estoque</label><input id="pStock" type="number" min="0" step="1" value="1" required></div>
-<div><label>Link da foto</label><input id="pImage" type="url" placeholder="https://..."></div>
+<div><label>Fotos do produto (pode selecionar várias)</label><input id="pImages" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple><small style="color:var(--muted)">Escolha até 6 fotos. Até 10 MB por imagem.</small></div>
 <div><label>Descrição</label><input id="pDescription"></div>
 </div>
 <button class="submit" type="submit">CADASTRAR PRODUTO</button>
@@ -235,7 +239,7 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 const SUPABASE_URL='https://tbygkbxvpnjcjsvqueuv.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_RjqWz228EvN295E0zof1gA_J6Ju6FYi';
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-let mode='signup',products=[],cart=JSON.parse(localStorage.getItem('kb_cart')||'[]');
+let mode='signup',products=[],cart=JSON.parse(localStorage.getItem('kb_cart')||'[]');let productPhotoIndex={};
 
 const rates={
  'Samambaia Sul':5,
@@ -364,11 +368,26 @@ async function loadProducts(category=''){
  if(error){grid.innerHTML='<p>As novidades estão sendo preparadas. ❤️‍🔥</p>';return}
  products=data||[];
  if(!products.length){grid.innerHTML='<p>Em breve, novidades por aqui. ❤️‍🔥</p>';return}
- grid.innerHTML=products.map(p=>`<article class="product">
- <div class="product-art">${p.image_url?`<img src="${safe(p.image_url)}" alt="${safe(p.name)}">`:'✦'}</div>
- <div class="product-info"><strong>${safe(p.name)}</strong><small>${safe(p.description||p.category||'KB Closet')}</small>
- <strong style="margin-top:10px;color:#ff9eae">${money(p.price)}</strong>
- <button class="buy" ${Number(p.stock)<=0?'disabled':''} onclick="addToCart('${p.id}')">${Number(p.stock)<=0?'ESGOTADO':'ADICIONAR À SACOLA'}</button></div></article>`).join('');
+ grid.innerHTML=products.map(renderProductCard).join('');
+}
+function renderProductCard(p){
+ const photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
+ productPhotoIndex[p.id]=0;
+ let gallery='✦';
+ if(photos.length){
+  gallery='<div class="product-gallery"><img id="product-photo-'+p.id+'" src="'+safe(photos[0])+'" alt="'+safe(p.name)+'">';
+  if(photos.length>1)gallery+='<button class="gallery-control prev" onclick="changeProductPhoto(\''+p.id+'\',-1)">‹</button><button class="gallery-control next" onclick="changeProductPhoto(\''+p.id+'\',1)">›</button><span class="gallery-count" id="product-photo-count-'+p.id+'">1/'+photos.length+'</span>';
+  gallery+='</div>';
+ }
+ return '<article class="product"><div class="product-art">'+gallery+'</div><div class="product-info"><strong>'+safe(p.name)+'</strong><small>'+safe(p.description||p.category||'KB Closet')+'</small><strong style="margin-top:10px;color:#ff9eae">'+money(p.price)+'</strong><button class="buy" '+(Number(p.stock)<=0?'disabled':'')+' onclick="addToCart(\''+p.id+'\')">'+(Number(p.stock)<=0?'ESGOTADO':'ADICIONAR À SACOLA')+'</button></div></article>';
+}
+function changeProductPhoto(id,delta){
+ const p=products.find(x=>x.id===id);if(!p)return;
+ const photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
+ if(photos.length<2)return;
+ productPhotoIndex[id]=(productPhotoIndex[id]+delta+photos.length)%photos.length;
+ const i=productPhotoIndex[id],img=document.getElementById('product-photo-'+id),count=document.getElementById('product-photo-count-'+id);
+ if(img)img.src=photos[i];if(count)count.textContent=(i+1)+'/'+photos.length;
 }
 function safe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function filterCategory(category){document.getElementById('productHeading').textContent=category.toUpperCase();loadProducts(category);document.getElementById('novidades').scrollIntoView({behavior:'smooth'})}
@@ -444,10 +463,20 @@ async function loadMyOrders(){
  list.innerHTML=data.length?data.map(o=>`<div class="order-row">Pedido #${o.id}<br>${new Date(o.created_at).toLocaleDateString('pt-BR')} • ${safe(o.status)}<br>Total: ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>Status do pagamento: ${safe(o.payment_status||'Aguardando confirmação')}</div>`).join(''):'Você ainda não tem pedidos.';
 }
 document.getElementById('productForm').addEventListener('submit',async e=>{
- e.preventDefault();let msg=document.getElementById('adminOrders');
- let {error}=await supabaseClient.from('products').insert({name:document.getElementById('pName').value.trim(),category:document.getElementById('pCategory').value,price:Number(document.getElementById('pPrice').value),stock:Number(document.getElementById('pStock').value),image_url:document.getElementById('pImage').value.trim()||null,description:document.getElementById('pDescription').value.trim(),active:true});
- if(error){msg.textContent='Erro ao cadastrar: '+error.message;return}
- msg.textContent='Produto cadastrado!';e.target.reset();loadProducts();
+ e.preventDefault();const msg=document.getElementById('adminOrders'),submit=e.target.querySelector('button[type="submit"]'),files=Array.from(document.getElementById('pImages').files||[]);
+ if(files.length>6){msg.textContent='Escolha no máximo 6 fotos.';return}
+ if(files.some(f=>f.size>10*1024*1024)){msg.textContent='Cada foto precisa ter até 10 MB.';return}
+ submit.disabled=true;submit.textContent='ENVIANDO FOTOS...';msg.textContent='Enviando fotos do produto...';
+ const imageUrls=[];
+ for(const file of files){
+  const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_'),path='products/'+Date.now()+'-'+Math.random().toString(36).slice(2)+'-'+safeName;
+  const {error:uploadError}=await supabaseClient.storage.from('kb-products').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
+  if(uploadError){msg.textContent='Erro ao enviar foto: '+uploadError.message;submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';return}
+  const {data:publicData}=supabaseClient.storage.from('kb-products').getPublicUrl(path);imageUrls.push(publicData.publicUrl);
+ }
+ const {error}=await supabaseClient.from('products').insert({name:document.getElementById('pName').value.trim(),category:document.getElementById('pCategory').value,price:Number(document.getElementById('pPrice').value),stock:Number(document.getElementById('pStock').value),image_url:imageUrls[0]||null,image_urls:imageUrls,description:document.getElementById('pDescription').value.trim(),active:true});
+ if(error){msg.textContent='Erro ao cadastrar: '+error.message;submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';return}
+ msg.textContent='Produto cadastrado com '+imageUrls.length+' foto(s)!';e.target.reset();submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';loadProducts();
 });
 async function loadAdminOrders(){
  let el=document.getElementById('adminOrders');el.textContent='Carregando pedidos...';
