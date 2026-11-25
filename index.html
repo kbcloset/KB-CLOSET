@@ -439,9 +439,9 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
 async function loadMyOrders(){
  document.getElementById('ordersPanel').classList.remove('hidden');let list=document.getElementById('ordersList');list.textContent='Carregando...';
  let {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;
- let {data,error}=await supabaseClient.from('orders').select('id,created_at,status,total,delivery_fee,payment_method').eq('user_id',user.id).order('created_at',{ascending:false});
+ let {data,error}=await supabaseClient.from('orders').select('id,created_at,status,total,delivery_fee,payment_method,payment_status').eq('user_id',user.id).order('created_at',{ascending:false});
  if(error){list.textContent='Não foi possível carregar seus pedidos.';return}
- list.innerHTML=data.length?data.map(o=>`<div class="order-row">Pedido #${o.id}<br>${new Date(o.created_at).toLocaleDateString('pt-BR')} • ${safe(o.status)}<br>Total: ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}</div>`).join(''):'Você ainda não tem pedidos.';
+ list.innerHTML=data.length?data.map(o=>`<div class="order-row">Pedido #${o.id}<br>${new Date(o.created_at).toLocaleDateString('pt-BR')} • ${safe(o.status)}<br>Total: ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>Status do pagamento: ${safe(o.payment_status||'Aguardando confirmação')}</div>`).join(''):'Você ainda não tem pedidos.';
 }
 document.getElementById('productForm').addEventListener('submit',async e=>{
  e.preventDefault();let msg=document.getElementById('adminOrders');
@@ -451,9 +451,9 @@ document.getElementById('productForm').addEventListener('submit',async e=>{
 });
 async function loadAdminOrders(){
  let el=document.getElementById('adminOrders');el.textContent='Carregando pedidos...';
- let {data,error}=await supabaseClient.from('orders').select('id,created_at,customer_name,phone,status,total,payment_method').order('created_at',{ascending:false}).limit(50);
+ let {data,error}=await supabaseClient.from('orders').select('id,created_at,customer_name,phone,status,total,payment_method,payment_status').order('created_at',{ascending:false}).limit(50);
  if(error){el.textContent='Não foi possível carregar pedidos.';return}
- el.innerHTML='<h3>Pedidos recebidos</h3>'+ (data.length?data.map(o=>`<div class="order-row">#${o.id} — ${safe(o.customer_name)}<br>${safe(o.phone)} • ${safe(o.status)} • ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>${new Date(o.created_at).toLocaleString('pt-BR')}</div>`).join(''):'Nenhum pedido ainda.');
+ el.innerHTML='<h3>Pedidos recebidos</h3>'+ (data.length?data.map(o=>`<div class="order-row">#${o.id} — ${safe(o.customer_name)}<br>${safe(o.phone)} • ${safe(o.status)} • ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>Status do pagamento: ${safe(o.payment_status||'Aguardando confirmação')}<br>${new Date(o.created_at).toLocaleString('pt-BR')}</div>`).join(''):'Nenhum pedido ainda.');
 }
 
 supabaseClient.auth.onAuthStateChange((event) => {
