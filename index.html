@@ -79,6 +79,18 @@ input,select,textarea{width:100%;padding:14px;background:#10080b;border:1px soli
 .cart-box{position:fixed;inset:0;background:#000b;z-index:10;display:flex;justify-content:flex-end}
 .cart-content{background:#1a0d12;width:min(100%,430px);height:100%;overflow:auto;padding:24px}
 .cart-row,.order-row{border-bottom:1px solid var(--line);padding:14px 0;line-height:1.6}
+.admin-order{cursor:pointer;border:1px solid var(--line);padding:15px;margin:10px 0;background:#1a0d12;transition:border-color .2s}
+.admin-order:hover{border-color:#d98b9f}
+.admin-order:focus{outline:2px solid #d98b9f;outline-offset:2px}
+.admin-order small{color:var(--muted)}
+.order-modal{position:fixed;inset:0;background:#000c;z-index:30;display:flex;align-items:center;justify-content:center;padding:14px}
+.order-modal-card{background:#1a0d12;border:1px solid var(--line);width:min(100%,650px);max-height:92vh;overflow:auto;padding:22px}
+.order-modal-card h2{margin-top:0}
+.order-detail-line{border-bottom:1px solid var(--line);padding:10px 0;line-height:1.6}
+.order-detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.order-detail-actions button{padding:13px}
+@media(max-width:600px){.order-modal-card{padding:16px}.order-detail-actions{grid-template-columns:1fr}}
+
 .pix-panel{margin-top:18px;padding:18px;border:1px solid #57303d;background:#10080b;text-align:center}
 .pix-panel img{display:block;width:220px;max-width:100%;height:auto;margin:15px auto;background:white;padding:8px}
 .pix-code{font-size:12px;min-height:90px;resize:vertical}
@@ -204,6 +216,27 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 </section>
 </main>
 
+<div id="adminOrderModal" class="order-modal hidden" role="dialog" aria-modal="true" aria-labelledby="adminOrderTitle">
+ <div class="order-modal-card">
+  <button class="secondary" type="button" onclick="closeAdminOrder()">← VOLTAR AOS PEDIDOS</button>
+  <h2 id="adminOrderTitle">Detalhes do pedido</h2>
+  <div id="adminOrderDetail">Carregando...</div>
+  <label for="adminOrderStatus">Status do pedido</label>
+  <select id="adminOrderStatus">
+   <option value="Pedido recebido">Pedido recebido</option>
+   <option value="Pedido confirmado">Pedido confirmado</option>
+   <option value="Em preparação">Em preparação</option>
+   <option value="Saiu para entrega">Saiu para entrega</option>
+   <option value="Concluído">Concluído</option>
+   <option value="Cancelado">Cancelado</option>
+  </select>
+  <div class="order-detail-actions">
+   <button class="submit" type="button" onclick="saveAdminOrderStatus()">SALVAR STATUS</button>
+   <button class="copy-pix" type="button" id="sendOrderEmailButton" onclick="sendOrderConfirmationEmail()">ENVIAR E-MAIL DE CONFIRMAÇÃO</button>
+  </div>
+  <p id="adminOrderMessage"></p>
+ </div>
+</div>
 <div id="productDetail" class="product-detail hidden" role="dialog" aria-modal="true" aria-label="Detalhes do produto"><button class="detail-back" onclick="closeProductDetail()">← VOLTAR À LOJA</button><div id="productDetailContent"></div></div>
 <button class="cart" onclick="openCart()">SACOLA (<span id="cartCount">0</span>)</button>
 <div id="cartLayer" class="cart-box hidden">
@@ -551,11 +584,49 @@ document.getElementById('productForm').addEventListener('submit',async e=>{
  msg.textContent='Produto cadastrado com '+imageUrls.length+' foto(s) e '+variants.length+' combinações!';e.target.reset();uniqueSize.checked=true;sizeInput.value='Tamanho único';sizeInput.disabled=true;renderVariantStockMatrix();submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';loadProducts();
 });
 
+let activeAdminOrderId=null;
 async function loadAdminOrders(){
- let el=document.getElementById('adminOrders');el.textContent='Carregando pedidos...';
- let {data,error}=await supabaseClient.from('orders').select('id,created_at,customer_name,phone,status,total,payment_method,payment_status').order('created_at',{ascending:false}).limit(50);
+ const el=document.getElementById('adminOrders');el.textContent='Carregando pedidos...';
+ const {data,error}=await supabaseClient.from('orders').select('id,created_at,customer_name,customer_phone,phone,status,total,payment_method,payment_status,confirmation_email_sent_at').order('created_at',{ascending:false}).limit(50);
  if(error){el.textContent='Não foi possível carregar pedidos.';return}
- el.innerHTML='<h3>Pedidos recebidos</h3>'+ (data.length?data.map(o=>`<div class="order-row">#${o.id} — ${safe(o.customer_name)}<br>${safe(o.phone)} • ${safe(o.status)} • ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>Status do pagamento: ${safe(o.payment_status||'Aguardando confirmação')}<br>${new Date(o.created_at).toLocaleString('pt-BR')}</div>`).join(''):'Nenhum pedido ainda.');
+ el.innerHTML='<h3>Pedidos recebidos — clique para abrir</h3>'+(data.length?data.map(o=>`<div class="admin-order" role="button" tabindex="0" onclick="openAdminOrder('${o.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAdminOrder('${o.id}')}"><strong>#${o.id} — ${safe(o.customer_name)}</strong><br>${safe(o.customer_phone||o.phone||'Sem telefone')} • ${safe(o.status||'Pedido recebido')} • ${money(o.total)}<br><small>Pagamento: ${safe(paymentName(o.payment_method))} • ${safe(o.payment_status||'Aguardando confirmação')}</small><br><small>${new Date(o.created_at).toLocaleString('pt-BR')} • Abrir detalhes ↗</small></div>`).join(''):'Nenhum pedido ainda.');
+}
+function closeAdminOrder(){document.getElementById('adminOrderModal').classList.add('hidden');activeAdminOrderId=null}
+async function openAdminOrder(orderId){
+ activeAdminOrderId=orderId;
+ const modal=document.getElementById('adminOrderModal'),detail=document.getElementById('adminOrderDetail'),msg=document.getElementById('adminOrderMessage');
+ modal.classList.remove('hidden');detail.textContent='Carregando detalhes...';msg.textContent='';
+ const [{data:o,error},{data:items,error:itemError}]=await Promise.all([
+  supabaseClient.from('orders').select('id,created_at,customer_name,customer_email,customer_phone,phone,delivery_address,address,delivery_zone,subtotal,delivery_fee,total,status,payment_method,payment_status,confirmation_email_sent_at').eq('id',orderId).maybeSingle(),
+  supabaseClient.from('order_items').select('product_name,color,size,quantity,unit_price').eq('order_id',orderId)
+ ]);
+ if(error||!o){detail.textContent='Não foi possível abrir este pedido. Confira se sua conta tem acesso de administradora.';return}
+ document.getElementById('adminOrderTitle').textContent='Pedido #'+o.id;
+ document.getElementById('adminOrderStatus').value=o.status||'Pedido recebido';
+ const emailBtn=document.getElementById('sendOrderEmailButton');
+ emailBtn.textContent=o.confirmation_email_sent_at?'REENVIAR E-MAIL DE CONFIRMAÇÃO':'ENVIAR E-MAIL DE CONFIRMAÇÃO';
+ detail.innerHTML=`<div class="order-detail-line"><strong>Cliente:</strong> ${safe(o.customer_name)}<br><strong>E-mail:</strong> ${safe(o.customer_email||'Não cadastrado')}<br><strong>Telefone:</strong> ${safe(o.customer_phone||o.phone||'Não cadastrado')}</div><div class="order-detail-line"><strong>Endereço:</strong> ${safe(o.delivery_address||o.address||'Não informado')}<br><strong>Região:</strong> ${safe(o.delivery_zone||'Não informada')}</div><div class="order-detail-line"><strong>Itens:</strong><br>${itemError?'Não foi possível carregar os itens.':items.map(it=>`${safe(it.product_name)} — ${safe(it.color||'Única')} / ${safe(it.size||'Tamanho único')} × ${it.quantity} — ${money(Number(it.unit_price)*Number(it.quantity))}`).join('<br>')||'Nenhum item encontrado'}</div><div class="order-detail-line">Subtotal: ${money(o.subtotal)}<br>Entrega: ${money(o.delivery_fee)}<br><strong>Total: ${money(o.total)}</strong></div><div class="order-detail-line"><strong>Pagamento:</strong> ${safe(paymentName(o.payment_method))}<br><strong>Status do pagamento:</strong> ${safe(o.payment_status||'Aguardando confirmação')}<br><strong>Data:</strong> ${new Date(o.created_at).toLocaleString('pt-BR')}<br><strong>E-mail de confirmação:</strong> ${o.confirmation_email_sent_at?'Enviado em '+new Date(o.confirmation_email_sent_at).toLocaleString('pt-BR'):'Ainda não enviado'}</div>`;
+}
+async function saveAdminOrderStatus(){
+ if(!activeAdminOrderId)return;
+ const status=document.getElementById('adminOrderStatus').value,msg=document.getElementById('adminOrderMessage');
+ msg.textContent='Salvando status...';
+ const {error}=await supabaseClient.from('orders').update({status}).eq('id',activeAdminOrderId);
+ if(error){msg.textContent='Não consegui salvar o status: '+error.message;return}
+ msg.textContent='Status atualizado!';
+ await loadAdminOrders();
+ if(status==='Pedido confirmado'){
+  msg.textContent='Pedido confirmado. Tentando enviar o e-mail...';
+  await sendOrderConfirmationEmail();
+ }
+}
+async function sendOrderConfirmationEmail(){
+ if(!activeAdminOrderId)return;
+ const msg=document.getElementById('adminOrderMessage');msg.textContent='Enviando e-mail para a cliente...';
+ const {data,error}=await supabaseClient.functions.invoke('send-order-confirmation',{body:{order_id:activeAdminOrderId}});
+ if(error||!data||(!data.sent&&!data.already_sent)){msg.textContent=(data&&data.error)||error?.message||'O status foi salvo, mas o e-mail não foi enviado.';return}
+ msg.textContent=data.message||'E-mail de confirmação enviado!';
+ await openAdminOrder(activeAdminOrderId);await loadAdminOrders();
 }
 
 supabaseClient.auth.onAuthStateChange((event) => {
