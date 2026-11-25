@@ -233,6 +233,7 @@ const rates={
  'Outro':null
 };
 
+function paymentName(method){return ({pix:'Pix — confirmar pelo WhatsApp',card_delivery:'Cartão na entrega (Ton)',card_link:'Cartão por link (Ton)'})[method]||'A combinar'}
 const money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 function goToAccount(){document.querySelector('#conta').scrollIntoView({behavior:'smooth'})}
 function setMode(nextMode){
@@ -404,9 +405,9 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
 async function loadMyOrders(){
  document.getElementById('ordersPanel').classList.remove('hidden');let list=document.getElementById('ordersList');list.textContent='Carregando...';
  let {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;
- let {data,error}=await supabaseClient.from('orders').select('id,created_at,status,total,delivery_fee').eq('user_id',user.id).order('created_at',{ascending:false});
+ let {data,error}=await supabaseClient.from('orders').select('id,created_at,status,total,delivery_fee,payment_method').eq('user_id',user.id).order('created_at',{ascending:false});
  if(error){list.textContent='Não foi possível carregar seus pedidos.';return}
- list.innerHTML=data.length?data.map(o=>`<div class="order-row">Pedido #${o.id}<br>${new Date(o.created_at).toLocaleDateString('pt-BR')} • ${safe(o.status)}<br>Total: ${money(o.total)}</div>`).join(''):'Você ainda não tem pedidos.';
+ list.innerHTML=data.length?data.map(o=>`<div class="order-row">Pedido #${o.id}<br>${new Date(o.created_at).toLocaleDateString('pt-BR')} • ${safe(o.status)}<br>Total: ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}</div>`).join(''):'Você ainda não tem pedidos.';
 }
 document.getElementById('productForm').addEventListener('submit',async e=>{
  e.preventDefault();let msg=document.getElementById('adminOrders');
@@ -416,9 +417,9 @@ document.getElementById('productForm').addEventListener('submit',async e=>{
 });
 async function loadAdminOrders(){
  let el=document.getElementById('adminOrders');el.textContent='Carregando pedidos...';
- let {data,error}=await supabaseClient.from('orders').select('id,created_at,customer_name,phone,status,total').order('created_at',{ascending:false}).limit(50);
+ let {data,error}=await supabaseClient.from('orders').select('id,created_at,customer_name,phone,status,total,payment_method').order('created_at',{ascending:false}).limit(50);
  if(error){el.textContent='Não foi possível carregar pedidos.';return}
- el.innerHTML='<h3>Pedidos recebidos</h3>'+ (data.length?data.map(o=>`<div class="order-row">#${o.id} — ${safe(o.customer_name)}<br>${safe(o.phone)} • ${safe(o.status)} • ${money(o.total)}<br>${new Date(o.created_at).toLocaleString('pt-BR')}</div>`).join(''):'Nenhum pedido ainda.');
+ el.innerHTML='<h3>Pedidos recebidos</h3>'+ (data.length?data.map(o=>`<div class="order-row">#${o.id} — ${safe(o.customer_name)}<br>${safe(o.phone)} • ${safe(o.status)} • ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>${new Date(o.created_at).toLocaleString('pt-BR')}</div>`).join(''):'Nenhum pedido ainda.');
 }
 
 supabaseClient.auth.onAuthStateChange((event) => {
