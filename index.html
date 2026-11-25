@@ -487,7 +487,7 @@ async function loadProducts(category=''){
  products=data||[];
  if(!products.length){grid.innerHTML='<p>Em breve, novidades por aqui. ❤️‍🔥</p>';return}
  const {data:variants}=await supabaseClient.from('product_variants').select('id,product_id,color,size,stock').in('product_id',products.map(p=>p.id));
- productVariants={};(variants||[]).forEach(v=>(productVariants[v.product_id]||(productVariants[v.product_id]=[])).push(v));
+ adminProductVariants={};(variants||[]).forEach(v=>(adminProductVariants[v.product_id]||(adminProductVariants[v.product_id]=[])).push(v));
  grid.innerHTML=products.map(renderProductCard).join('');products.forEach(p=>{if((productVariants[p.id]||[]).length)updateVariantOptions(p.id)});
 }
 function renderProductCard(p){
@@ -634,14 +634,14 @@ async function retryExistingPix(orderId){
 function parseList(id){return [...new Set(document.getElementById(id).value.split(',').map(x=>x.trim()).filter(Boolean))]}
 function renderVariantStockMatrix(){
  const colors=parseList('pColors'),sizes=parseList('pSizes'),box=document.getElementById('variantStockMatrix');if(!box)return;
- const existing=editingProductId?(productVariants[editingProductId]||[]):[];
+ const existing=editingProductId?(adminProductVariants[editingProductId]||[]):[];
  box.innerHTML=colors.flatMap(color=>sizes.map(size=>{
   const old=existing.find(v=>v.color===color&&v.size===size);
   return '<div><label>'+safe(color)+' / '+safe(size)+'</label><input type="number" min="0" step="1" value="'+(old?Number(old.stock):1)+'" class="variant-stock-input" data-color="'+safe(color)+'" data-size="'+safe(size)+'" data-variant-id="'+(old?old.id:'')+'" required></div>';
  })).join('');
 }
 const uniqueSize=document.getElementById('pUniqueSize'),sizeInput=document.getElementById('pSizes');uniqueSize.addEventListener('change',()=>{if(uniqueSize.checked){sizeInput.value='Tamanho único';sizeInput.disabled=true}else{sizeInput.disabled=false;sizeInput.value='';sizeInput.focus()}renderVariantStockMatrix()});sizeInput.disabled=true;document.getElementById('pColors').addEventListener('input',renderVariantStockMatrix);sizeInput.addEventListener('input',renderVariantStockMatrix);renderVariantStockMatrix();
-let editingProductId=null,adminProducts=[],adminProductsTab='active',adminOrdersCache=[];
+let editingProductId=null,adminProducts=[],adminProductVariants={},adminProductsTab='active',adminOrdersCache=[];
 function renderAdminStats(){
  const active=adminProducts.filter(p=>p.active).length,archived=adminProducts.length-active;
  const pending=adminOrdersCache.filter(o=>!['Concluído','Cancelado'].includes(o.status)).length;
@@ -653,7 +653,7 @@ function openAdminWorkspace(){
  document.getElementById('adminQuickbar').classList.add('hidden');
  document.getElementById('adminPanel').classList.remove('hidden');
  showAdminSection('products');
- loadAdminProducts();loadAdminOrders();
+ loadAdminOrders();
 }
 function closeAdminWorkspace(){
  document.body.classList.remove('admin-mode');
@@ -678,7 +678,7 @@ async function loadAdminProducts(){
   const {data:variants,error:variantError}=await supabaseClient.from('product_variants').select('id,product_id,color,size,stock').in('product_id',adminProducts.map(p=>p.id));
   if(variantError){msg.textContent='Produtos carregados, mas não consegui ler o estoque: '+variantError.message;return}
   productVariants={};(variants||[]).forEach(v=>(productVariants[v.product_id]||(productVariants[v.product_id]=[])).push(v));
- }else productVariants={};
+ }else adminProductVariants={};
  renderAdminStats();renderAdminProducts(); 
 }
 function renderAdminProducts(){
@@ -687,7 +687,7 @@ function renderAdminProducts(){
  const shown=adminProducts.filter(p=>adminProductsTab==='all'||(adminProductsTab==='active'?!!p.active:!p.active));
  if(!shown.length){list.innerHTML='<p>Nenhum produto nesta lista.</p>';return}
  list.innerHTML=shown.map(p=>{
-  const vars=productVariants[p.id]||[],stock=vars.reduce((sum,v)=>sum+Number(v.stock||0),0),photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
+  const vars=adminProductVariants[p.id]||[],stock=vars.reduce((sum,v)=>sum+Number(v.stock||0),0),photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
   const image=photos.length?'<img src="'+safe(photos[0])+'" alt="'+safe(p.name)+'">':'✦';
   return '<article class="admin-product-card"><div class="admin-product-thumb">'+image+'</div><div class="admin-product-info"><strong>'+safe(p.name)+'</strong><small>'+safe(p.category||'Sem categoria')+' • '+money(p.price)+'<br>Estoque: '+stock+' unidade(s)<br>'+(p.active?'Na vitrine':'Arquivado')+'</small><div class="admin-product-actions"><button type="button" class="secondary" onclick="editAdminProduct(\''+p.id+'\')">EDITAR</button><button type="button" class="'+(p.active?'remove-product':'restore-product')+'" onclick="deleteOrArchiveAdminProduct(\''+p.id+'\')">'+(p.active?'REMOVER DA LOJA':'REPUBLICAR')+'</button></div></div></article>';
  }).join('');
@@ -696,7 +696,7 @@ function showAdminProductsTab(tab){adminProductsTab=tab;renderAdminProducts()}
 function editAdminProduct(id){
  const p=adminProducts.find(x=>String(x.id)===String(id));if(!p)return;
  editingProductId=p.id;
- const vars=productVariants[p.id]||[],colors=[...new Set(vars.map(v=>v.color))],sizes=[...new Set(vars.map(v=>v.size))];
+ const vars=adminProductVariants[p.id]||[],colors=[...new Set(vars.map(v=>v.color))],sizes=[...new Set(vars.map(v=>v.size))];
  document.getElementById('pName').value=p.name||'';document.getElementById('pCategory').value=p.category||'New Drop';document.getElementById('pPrice').value=p.price||'';
  document.getElementById('pColors').value=colors.join(', ')||'Única';document.getElementById('pSizes').value=sizes.join(', ')||'Tamanho único';
  const unique=sizes.length===1&&sizes[0]==='Tamanho único';document.getElementById('pUniqueSize').checked=unique;document.getElementById('pSizes').disabled=unique;
@@ -760,7 +760,7 @@ document.getElementById('productForm').addEventListener('submit',async e=>{
  else{const result=await supabaseClient.from('products').insert(productPayload).select('id').single();productError=result.error;productId=result.data?.id}
  if(productError){msg.textContent='Erro ao salvar produto: '+productError.message;submit.disabled=false;submit.textContent=current?'SALVAR ALTERAÇÕES':'CADASTRAR PRODUTO';return}
  if(current){
-  const oldVariants=productVariants[productId]||[];
+  const oldVariants=adminProductVariants[productId]||[];
   for(const v of variants){
    const old=oldVariants.find(x=>x.color===v.color&&x.size===v.size);
    const result=old?await supabaseClient.from('product_variants').update({stock:v.stock}).eq('id',old.id):await supabaseClient.from('product_variants').insert({...v,product_id:productId});
