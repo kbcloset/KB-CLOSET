@@ -101,7 +101,7 @@ input,select,textarea{width:100%;padding:14px;background:#10080b;border:1px soli
 footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:2px;display:flex;justify-content:space-between}
 @media(max-width:650px){header{padding:17px 5%}.nav{display:none}.hero{padding:58px 6%}h1{letter-spacing:-3px}.categories,.products{grid-template-columns:1fr 1fr}.category{min-height:120px;font-size:16px}.product-art{height:170px}.section{padding:42px 5%}.section-head{gap:15px;align-items:start;flex-direction:column}.panel-grid{grid-template-columns:1fr}footer{gap:12px;flex-direction:column}}
 
-.admin-quickbar{position:fixed;top:14px;right:14px;z-index:15}
+.admin-quickbar{position:fixed;top:88px;right:14px;z-index:15}
 .admin-quickbar button{background:var(--red);color:#fff;padding:13px 16px;box-shadow:0 8px 28px #0008;font-size:11px;letter-spacing:1px}
 .admin-workspace{max-width:1200px;margin:0 auto;padding:0;background:transparent;border:0}
 .admin-topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:10px 0 24px;border-bottom:1px solid var(--line)}
@@ -715,6 +715,7 @@ function resetAdminProductForm(){
 }
 async function deleteOrArchiveAdminProduct(id){
  const p=adminProducts.find(x=>String(x.id)===String(id));if(!p)return;
+ if(String(editingProductId)===String(id))resetAdminProductForm();
  if(!p.active){
   if(!confirm('Republicar '+p.name+' na vitrine da KB Closet?'))return;
   const {error}=await supabaseClient.from('products').update({active:true}).eq('id',id);
