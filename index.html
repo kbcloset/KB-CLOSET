@@ -637,7 +637,12 @@ async function sendOrderConfirmationEmail(){
  if(!activeAdminOrderId)return;
  const msg=document.getElementById('adminOrderMessage');msg.textContent='Enviando e-mail para a cliente...';
  const {data,error}=await supabaseClient.functions.invoke('send-order-confirmation',{body:{order_id:activeAdminOrderId}});
- if(error||!data||(!data.sent&&!data.already_sent)){msg.textContent=(data&&data.error)||error?.message||'O status foi salvo, mas o e-mail não foi enviado.';return}
+ if(error){
+  let detail=error.message||'O e-mail não foi enviado.';
+  try{const body=await error.context?.json();if(body?.error)detail=body.error}catch{}
+  msg.textContent=detail;return;
+ }
+ if(!data||!data.sent){msg.textContent=(data&&data.error)||'O e-mail não foi enviado.';return}
  msg.textContent=data.message||'E-mail de confirmação enviado!';
  await openAdminOrder(activeAdminOrderId);await loadAdminOrders();
 }
