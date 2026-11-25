@@ -33,7 +33,20 @@ h1 em{font-style:normal;color:var(--red)}
 .category:nth-child(2){background:linear-gradient(145deg,#501321,#210b12)}
 .category:nth-child(3){background:linear-gradient(145deg,#2c1820,#13090c)}
 .products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.product{border:1px solid var(--line);background:#1a0d12;overflow:hidden}
+.product{border:1px solid var(--line);background:#1a0d12;overflow:hidden;cursor:pointer}
+.product-card-art{height:300px;background:linear-gradient(145deg,#421321,#1b0b11);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.product-card-art img{width:100%;height:100%;object-fit:cover}
+.product-card-info{padding:16px}.product-card-info strong{display:block;text-transform:uppercase;font-size:14px}.product-card-info small{display:block;color:var(--muted);margin-top:8px}.product-card-info .price{display:block;color:#ff9eae;margin-top:12px;font-weight:900}
+.product-detail{position:fixed;inset:0;z-index:20;background:var(--deep);overflow-y:auto;padding:18px 5% 40px}
+.detail-back{position:sticky;top:0;z-index:3;background:#13090cf2;color:white;border:1px solid #57303d;padding:14px 18px;margin-bottom:18px}
+.detail-layout{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:35px}
+.detail-photo{height:min(75vh,760px);min-height:360px;background:#1a0d12;position:relative;display:flex;align-items:center;justify-content:center}
+.detail-photo img{width:100%;height:100%;object-fit:contain}
+.detail-info{padding:15px 0}.detail-info h2{font-size:clamp(28px,5vw,48px);text-transform:uppercase;line-height:1;margin:8px 0 18px}
+.detail-description{color:#d8c5c5;line-height:1.7;font-size:14px;white-space:pre-wrap}
+.detail-price{font-size:26px;color:#ff9eae;font-weight:900;margin:22px 0}
+.detail-info .buy{padding:17px;font-size:12px}
+@media(max-width:700px){.product-card-art{height:220px}.detail-layout{grid-template-columns:1fr;gap:12px}.detail-photo{height:58vh;min-height:280px}.detail-info{padding:0 0 25px}.product-detail{padding:12px 4% 30px}}
 .product-art{height:230px;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#421321,#1b0b11);font-size:55px}
 .product-art img{width:100%;height:100%;object-fit:cover}
 .product-gallery{position:relative;width:100%;height:100%}
@@ -191,6 +204,7 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 </section>
 </main>
 
+<div id="productDetail" class="product-detail hidden" role="dialog" aria-modal="true" aria-label="Detalhes do produto"><button class="detail-back" onclick="closeProductDetail()">← VOLTAR À LOJA</button><div id="productDetailContent"></div></div>
 <button class="cart" onclick="openCart()">SACOLA (<span id="cartCount">0</span>)</button>
 <div id="cartLayer" class="cart-box hidden">
 <div class="cart-content">
@@ -376,24 +390,33 @@ async function loadProducts(category=''){
  grid.innerHTML=products.map(renderProductCard).join('');products.forEach(p=>{if((productVariants[p.id]||[]).length)updateVariantOptions(p.id)});
 }
 function renderProductCard(p){
- const photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]),vars=productVariants[p.id]||[];
- productPhotoIndex[p.id]=0;let gallery='✦';
- if(photos.length){gallery='<div class="product-gallery"><img id="product-photo-'+p.id+'" src="'+safe(photos[0])+'" alt="'+safe(p.name)+'">';
- if(photos.length>1)gallery+='<button class="gallery-control prev" onclick="changeProductPhoto(\''+p.id+'\',-1)">‹</button><button class="gallery-control next" onclick="changeProductPhoto(\''+p.id+'\',1)">›</button><span class="gallery-count" id="product-photo-count-'+p.id+'">1/'+photos.length+'</span>';gallery+='</div>'}
- let selectors='';
- if(vars.length){const colors=[...new Set(vars.map(v=>v.color))];
- selectors='<label>Cor</label><select class="variant-select" id="color-'+p.id+'" onchange="updateVariantOptions(\''+p.id+'\')">'+colors.map(v=>'<option value="'+safe(v)+'">'+safe(v)+'</option>').join('')+'</select><label>Tamanho</label><select class="variant-select" id="size-'+p.id+'" onchange="updateVariantStock(\''+p.id+'\')"></select><div class="variant-stock" id="stock-'+p.id+'"></div>';
- }else selectors='<label>Cor</label><select class="variant-select" id="color-'+p.id+'"><option>Única</option></select><label>Tamanho</label><select class="variant-select" id="size-'+p.id+'"><option>Tamanho único</option></select>';
- const stock=vars.length?vars.reduce((s,v)=>s+Number(v.stock),0):Number(p.stock);
- return '<article class="product"><div class="product-art">'+gallery+'</div><div class="product-info"><strong>'+safe(p.name)+'</strong><small>'+safe(p.description||p.category||'KB Closet')+'</small>'+selectors+'<strong style="margin-top:10px;color:#ff9eae">'+money(p.price)+'</strong><button class="buy" '+(stock<=0?'disabled':'')+' onclick="addToCart(\''+p.id+'\')">'+(stock<=0?'ESGOTADO':'ADICIONAR À SACOLA')+'</button></div></article>';
+ const photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
+ const image=photos.length?'<img src="'+safe(photos[0])+'" alt="'+safe(p.name)+'" loading="lazy">':'✦';
+ return '<article class="product" role="button" tabindex="0" onclick="openProductDetail(\\''+p.id+'\\')" onkeydown="if(event.key===\\'Enter\\'||event.key===\\' \\'){event.preventDefault();openProductDetail(\\''+p.id+'\\')}"><div class="product-card-art">'+image+'</div><div class="product-card-info"><strong>'+safe(p.name)+'</strong><small>'+safe(p.category||'KB Closet')+'</small><span class="price">'+money(p.price)+'</span></div></article>';
 }
+function openProductDetail(id){
+ const p=products.find(x=>String(x.id)===String(id));if(!p)return;
+ productPhotoIndex[id]=0;
+ const photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
+ const vars=productVariants[p.id]||[];
+ let gallery=photos.length?'<div class="detail-photo"><img id="product-photo-'+p.id+'" src="'+safe(photos[0])+'" alt="'+safe(p.name)+'">'+(photos.length>1?'<button class="gallery-control prev" onclick="changeProductPhoto(\\''+p.id+'\\',-1);event.stopPropagation()">‹</button><button class="gallery-control next" onclick="changeProductPhoto(\\''+p.id+'\\',1);event.stopPropagation()">›</button><span class="gallery-count" id="product-photo-count-'+p.id+'">1/'+photos.length+'</span>':'')+'</div>':'<div class="detail-photo">✦</div>';
+ let selectors='';
+ if(vars.length){
+  const colors=[...new Set(vars.map(v=>v.color))];
+  selectors='<label>Cor</label><select class="variant-select" id="color-'+p.id+'" onchange="updateVariantOptions(\\''+p.id+'\\')">'+colors.map(v=>'<option value="'+safe(v)+'">'+safe(v)+'</option>').join('')+'</select><label>Tamanho</label><select class="variant-select" id="size-'+p.id+'" onchange="updateVariantStock(\\''+p.id+'\\')"></select><div class="variant-stock hidden" id="stock-'+p.id+'"></div>';
+ }else selectors='<label>Cor</label><select class="variant-select" id="color-'+p.id+'"><option>Única</option></select><label>Tamanho</label><select class="variant-select" id="size-'+p.id+'"><option>Tamanho único</option></select>';
+ document.getElementById('productDetailContent').innerHTML='<div class="detail-layout">'+gallery+'<div class="detail-info"><div class="eyebrow">'+safe(p.category||'KB CLOSET')+'</div><h2>'+safe(p.name)+'</h2><div class="detail-description">'+safe(p.description||'')+'</div><div class="detail-price">'+money(p.price)+'</div>'+selectors+'<button class="buy" onclick="addToCart(\\''+p.id+'\\')">ADICIONAR À SACOLA</button></div></div>';
+ document.getElementById('productDetail').classList.remove('hidden');document.body.style.overflow='hidden';
+ if(vars.length)updateVariantOptions(p.id);
+}
+function closeProductDetail(){document.getElementById('productDetail').classList.add('hidden');document.body.style.overflow='';}
 function updateVariantOptions(id){
  const vars=productVariants[id]||[],color=document.getElementById('color-'+id),size=document.getElementById('size-'+id);if(!color||!size)return;
  const sizes=[...new Set(vars.filter(v=>v.color===color.value).map(v=>v.size))];size.innerHTML=sizes.map(v=>'<option value="'+safe(v)+'">'+safe(v)+'</option>').join('');updateVariantStock(id);
 }
 function updateVariantStock(id){
  const vars=productVariants[id]||[],color=document.getElementById('color-'+id),size=document.getElementById('size-'+id),stock=document.getElementById('stock-'+id),btn=document.getElementById('color-'+id)?.closest('.product-info')?.querySelector('.buy');if(!color||!size)return;
- const v=vars.find(x=>x.color===color.value&&x.size===size.value);if(stock)stock.textContent=v?'Disponível: '+v.stock:'Indisponível';if(btn){btn.disabled=!v||Number(v.stock)<=0;btn.textContent=btn.disabled?'ESGOTADO':'ADICIONAR À SACOLA'}
+ const v=vars.find(x=>x.color===color.value&&x.size===size.value);if(stock)stock.textContent='';if(btn){btn.disabled=!v||Number(v.stock)<=0;btn.textContent='ADICIONAR À SACOLA'}
 }
 function changeProductPhoto(id,delta){
  const p=products.find(x=>x.id===id);if(!p)return;
