@@ -632,6 +632,7 @@ async function retryExistingPix(orderId){
  if(result)document.getElementById('checkoutMessage').textContent='Pix gerado para o pedido #'+orderId+'. Faça o pagamento pelo QR Code ou código copia e cola.';
 }
 function parseList(id){return [...new Set(document.getElementById(id).value.split(',').map(x=>x.trim()).filter(Boolean))]}
+let editingProductId=null,adminProducts=[],adminProductVariants={},adminProductsTab='active',adminOrdersCache=[];
 function renderVariantStockMatrix(){
  const colors=parseList('pColors'),sizes=parseList('pSizes'),box=document.getElementById('variantStockMatrix');if(!box)return;
  const existing=editingProductId?(adminProductVariants[editingProductId]||[]):[];
@@ -641,7 +642,7 @@ function renderVariantStockMatrix(){
  })).join('');
 }
 const uniqueSize=document.getElementById('pUniqueSize'),sizeInput=document.getElementById('pSizes');uniqueSize.addEventListener('change',()=>{if(uniqueSize.checked){sizeInput.value='Tamanho único';sizeInput.disabled=true}else{sizeInput.disabled=false;sizeInput.value='';sizeInput.focus()}renderVariantStockMatrix()});sizeInput.disabled=true;document.getElementById('pColors').addEventListener('input',renderVariantStockMatrix);sizeInput.addEventListener('input',renderVariantStockMatrix);renderVariantStockMatrix();
-let editingProductId=null,adminProducts=[],adminProductVariants={},adminProductsTab='active',adminOrdersCache=[];
+
 function renderAdminStats(){
  const active=adminProducts.filter(p=>p.active).length,archived=adminProducts.length-active;
  const pending=adminOrdersCache.filter(o=>!['Concluído','Cancelado'].includes(o.status)).length;
