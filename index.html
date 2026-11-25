@@ -179,7 +179,7 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 <div><label>Categoria</label><select id="pCategory"><option>Vestidos</option><option>Conjuntos</option><option>Croppeds</option><option>New Drop</option></select></div>
 <div><label>Preço (R$)</label><input id="pPrice" type="number" min="0.01" step="0.01" required></div>
 <div><label>Cores (separe por vírgula)</label><input id="pColors" value="Única" placeholder="Preto, branco, vinho" required></div>
-<div><label>Tamanhos (separe por vírgula)</label><input id="pSizes" value="Tamanho único" placeholder="Único ou P, M, G, GG" required></div>
+<div><label><input id="pUniqueSize" type="checkbox" checked style="width:auto;margin-right:8px">Produto tamanho único</label><input id="pSizes" value="Tamanho único" placeholder="P, M, G, GG" required><small style="color:var(--muted)">Marque para cadastrar como tamanho único. Desmarque para informar P, M, G, GG etc.</small></div>
 <div><label>Estoque por cor e tamanho</label><small style="color:var(--muted)">Digite o estoque de cada combinação.</small><div id="variantStockMatrix" class="panel-grid"></div></div>
 <div><label>Fotos do produto (pode selecionar várias)</label><input id="pImages" type="file" accept="image/jpeg,image/png,image/webp,image/avif" multiple><small style="color:var(--muted)">Escolha até 6 fotos. Até 10 MB por imagem.</small></div>
 <div><label>Descrição</label><input id="pDescription"></div>
@@ -485,7 +485,7 @@ function renderVariantStockMatrix(){
  const colors=parseList('pColors'),sizes=parseList('pSizes'),box=document.getElementById('variantStockMatrix');if(!box)return;
  box.innerHTML=colors.flatMap(color=>sizes.map(size=>'<div><label>'+safe(color)+' / '+safe(size)+'</label><input type="number" min="0" step="1" value="1" class="variant-stock-input" data-color="'+safe(color)+'" data-size="'+safe(size)+'" required></div>')).join('');
 }
-document.getElementById('pColors').addEventListener('input',renderVariantStockMatrix);document.getElementById('pSizes').addEventListener('input',renderVariantStockMatrix);renderVariantStockMatrix();
+const uniqueSize=document.getElementById('pUniqueSize'),sizeInput=document.getElementById('pSizes');uniqueSize.addEventListener('change',()=>{if(uniqueSize.checked){sizeInput.value='Tamanho único';sizeInput.disabled=true}else{sizeInput.disabled=false;sizeInput.value='';sizeInput.focus()}renderVariantStockMatrix()});sizeInput.disabled=true;document.getElementById('pColors').addEventListener('input',renderVariantStockMatrix);sizeInput.addEventListener('input',renderVariantStockMatrix);renderVariantStockMatrix();
 document.getElementById('productForm').addEventListener('submit',async e=>{
  e.preventDefault();const msg=document.getElementById('adminOrders'),submit=e.target.querySelector('button[type="submit"]'),files=Array.from(document.getElementById('pImages').files||[]),colors=parseList('pColors'),sizes=parseList('pSizes'),inputs=[...document.querySelectorAll('.variant-stock-input')];
  if(!colors.length||!sizes.length){msg.textContent='Informe pelo menos uma cor e um tamanho.';return}
@@ -504,7 +504,7 @@ document.getElementById('productForm').addEventListener('submit',async e=>{
  if(error){msg.textContent='Erro ao cadastrar: '+error.message;submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';return}
  const {error:variantError}=await supabaseClient.from('product_variants').insert(variants.map(v=>({...v,product_id:product.id})));
  if(variantError){await supabaseClient.from('products').delete().eq('id',product.id);msg.textContent='Erro ao salvar cor/tamanho: '+variantError.message;submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';return}
- msg.textContent='Produto cadastrado com '+imageUrls.length+' foto(s) e '+variants.length+' combinações!';e.target.reset();renderVariantStockMatrix();submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';loadProducts();
+ msg.textContent='Produto cadastrado com '+imageUrls.length+' foto(s) e '+variants.length+' combinações!';e.target.reset();uniqueSize.checked=true;sizeInput.value='Tamanho único';sizeInput.disabled=true;renderVariantStockMatrix();submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';loadProducts();
 });
 
 async function loadAdminOrders(){
