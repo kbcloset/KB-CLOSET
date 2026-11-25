@@ -392,20 +392,20 @@ async function loadProducts(category=''){
 function renderProductCard(p){
  const photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
  const image=photos.length?'<img src="'+safe(photos[0])+'" alt="'+safe(p.name)+'" loading="lazy">':'✦';
- return '<article class="product" role="button" tabindex="0" onclick="openProductDetail(\\''+p.id+'\\')" onkeydown="if(event.key===\\'Enter\\'||event.key===\\' \\'){event.preventDefault();openProductDetail(\\''+p.id+'\\')}"><div class="product-card-art">'+image+'</div><div class="product-card-info"><strong>'+safe(p.name)+'</strong><small>'+safe(p.category||'KB Closet')+'</small><span class="price">'+money(p.price)+'</span></div></article>';
+ return '<article class="product" role="button" tabindex="0" onclick="openProductDetail(\''+p.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openProductDetail(\''+p.id+'\')}"><div class="product-card-art">'+image+'</div><div class="product-card-info"><strong>'+safe(p.name)+'</strong><small>'+safe(p.category||'KB Closet')+'</small><span class="price">'+money(p.price)+'</span></div></article>';
 }
 function openProductDetail(id){
  const p=products.find(x=>String(x.id)===String(id));if(!p)return;
  productPhotoIndex[id]=0;
  const photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
  const vars=productVariants[p.id]||[];
- let gallery=photos.length?'<div class="detail-photo"><img id="product-photo-'+p.id+'" src="'+safe(photos[0])+'" alt="'+safe(p.name)+'">'+(photos.length>1?'<button class="gallery-control prev" onclick="changeProductPhoto(\\''+p.id+'\\',-1);event.stopPropagation()">‹</button><button class="gallery-control next" onclick="changeProductPhoto(\\''+p.id+'\\',1);event.stopPropagation()">›</button><span class="gallery-count" id="product-photo-count-'+p.id+'">1/'+photos.length+'</span>':'')+'</div>':'<div class="detail-photo">✦</div>';
+ let gallery=photos.length?'<div class="detail-photo"><img id="product-photo-'+p.id+'" src="'+safe(photos[0])+'" alt="'+safe(p.name)+'">'+(photos.length>1?'<button class="gallery-control prev" onclick="changeProductPhoto(\''+p.id+'\',-1);event.stopPropagation()">‹</button><button class="gallery-control next" onclick="changeProductPhoto(\''+p.id+'\',1);event.stopPropagation()">›</button><span class="gallery-count" id="product-photo-count-'+p.id+'">1/'+photos.length+'</span>':'')+'</div>':'<div class="detail-photo">✦</div>';
  let selectors='';
  if(vars.length){
   const colors=[...new Set(vars.map(v=>v.color))];
-  selectors='<label>Cor</label><select class="variant-select" id="color-'+p.id+'" onchange="updateVariantOptions(\\''+p.id+'\\')">'+colors.map(v=>'<option value="'+safe(v)+'">'+safe(v)+'</option>').join('')+'</select><label>Tamanho</label><select class="variant-select" id="size-'+p.id+'" onchange="updateVariantStock(\\''+p.id+'\\')"></select><div class="variant-stock hidden" id="stock-'+p.id+'"></div>';
+  selectors='<label>Cor</label><select class="variant-select" id="color-'+p.id+'" onchange="updateVariantOptions(\''+p.id+'\')">'+colors.map(v=>'<option value="'+safe(v)+'">'+safe(v)+'</option>').join('')+'</select><label>Tamanho</label><select class="variant-select" id="size-'+p.id+'" onchange="updateVariantStock(\''+p.id+'\')"></select><div class="variant-stock hidden" id="stock-'+p.id+'"></div>';
  }else selectors='<label>Cor</label><select class="variant-select" id="color-'+p.id+'"><option>Única</option></select><label>Tamanho</label><select class="variant-select" id="size-'+p.id+'"><option>Tamanho único</option></select>';
- document.getElementById('productDetailContent').innerHTML='<div class="detail-layout">'+gallery+'<div class="detail-info"><div class="eyebrow">'+safe(p.category||'KB CLOSET')+'</div><h2>'+safe(p.name)+'</h2><div class="detail-description">'+safe(p.description||'')+'</div><div class="detail-price">'+money(p.price)+'</div>'+selectors+'<button class="buy" onclick="addToCart(\\''+p.id+'\\')">ADICIONAR À SACOLA</button></div></div>';
+ document.getElementById('productDetailContent').innerHTML='<div class="detail-layout">'+gallery+'<div class="detail-info"><div class="eyebrow">'+safe(p.category||'KB CLOSET')+'</div><h2>'+safe(p.name)+'</h2><div class="detail-description">'+safe(p.description||'')+'</div><div class="detail-price">'+money(p.price)+'</div>'+selectors+'<button class="buy" onclick="addToCart(\''+p.id+'\')">ADICIONAR À SACOLA</button></div></div>';
  document.getElementById('productDetail').classList.remove('hidden');document.body.style.overflow='hidden';
  if(vars.length)updateVariantOptions(p.id);
 }
