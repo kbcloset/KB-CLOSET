@@ -115,6 +115,9 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 <div id="phoneField"><label for="phone">WhatsApp</label><input id="phone" type="tel" autocomplete="tel" placeholder="(61) 99999-9999" required></div>
 <label for="email">E-mail</label><input id="email" type="email" autocomplete="email" placeholder="seuemail@exemplo.com" required>
 <label for="password">Senha</label><input id="password" type="password" autocomplete="new-password" placeholder="Mínimo de 6 caracteres" minlength="6" required>
+ <button type="button" class="whatsapp" onclick="forgotPassword()">
+  ESQUECI MINHA SENHA
+</button>
 <button class="submit" id="submitButton" type="submit">CRIAR MINHA CONTA ↗</button>
 </form>
 <div class="message" id="message" role="status"></div>
@@ -219,14 +222,36 @@ document.getElementById('authForm').addEventListener('submit',async e=>{
  }catch(error){msg.textContent=error.message||'Não foi possível concluir. Confira os dados.'}
  finally{btn.disabled=false;btn.textContent=mode==='signup'?'CRIAR MINHA CONTA ↗':'ENTRAR NA MINHA CONTA ↗'}
 });
-async function refreshAuth(){
+
+ async function refreshAuth(){
  let {data:{session}}=await supabaseClient.auth.getSession(),logged=!!session;
  document.getElementById('authPanel').classList.toggle('hidden',logged);
  document.getElementById('loggedPanel').classList.toggle('hidden',!logged);
  document.getElementById('loggedEmail').textContent=logged?session.user.email:'';
  if(logged){await checkAdmin();fillBuyerData(session.user)}
+}async function forgotPassword(){
+  const email = document.getElementById('email').value.trim();
+  const msg = document.getElementById('message');
+
+  if(!email){
+    msg.textContent = 'Digite seu e-mail primeiro.';
+    document.getElementById('email').focus();
+    return;
+  }
+
+  msg.textContent = 'Enviando e-mail de recuperação...';
+
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://kbcloset.github.io/KB-CLOSET/'
+  });
+
+  if(error){
+    msg.textContent = error.message;
+  }else{
+    msg.textContent = 'Enviamos um link para seu e-mail! Confira sua caixa de entrada.';
+  }
 }
-async function signOut(){await supabaseClient.auth.signOut();setMode('login');await refreshAuth()}
+ async function signOut(){await supabaseClient.auth.signOut();setMode('login');await refreshAuth()}
 function fillBuyerData(user){
  document.getElementById('buyerName').value=user.user_metadata?.full_name||'';
  document.getElementById('buyerPhone').value=user.user_metadata?.phone||'';
