@@ -83,6 +83,7 @@ input,select,textarea{width:100%;padding:14px;background:#10080b;border:1px soli
 .admin-order:hover{border-color:#d98b9f}
 .admin-order:focus{outline:2px solid #d98b9f;outline-offset:2px}
 .admin-order small{color:var(--muted)}
+.admin-order-tabs{display:flex;gap:8px;margin:16px 0}.admin-order-tab{flex:1;padding:13px;background:#2a141c;color:#e8d6d8;border:1px solid #57303d}.admin-order-tab.active{background:var(--red);border-color:var(--red);color:white}.admin-order-list{display:block}.admin-cancel-btn{width:100%;padding:15px;margin-top:12px;background:#b31332;color:#fff;font-weight:900}
 .order-modal{position:fixed;inset:0;background:#000c;z-index:30;display:flex;align-items:center;justify-content:center;padding:14px}
 .order-modal-card{background:#1a0d12;border:1px solid var(--line);width:min(100%,650px);max-height:92vh;overflow:auto;padding:22px}
 .order-modal-card h2{margin-top:0}
@@ -228,12 +229,12 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
    <option value="Em preparação">Em preparação</option>
    <option value="Saiu para entrega">Saiu para entrega</option>
    <option value="Concluído">Concluído</option>
-   <option value="Cancelado">Cancelado</option>
   </select>
   <div class="order-detail-actions">
-   <button class="submit" type="button" onclick="saveAdminOrderStatus()">SALVAR STATUS</button>
+   <button class="submit" type="button" onclick="saveAdminOrderStatus()">SALVAR ETAPA DO PEDIDO</button>
    <button class="copy-pix" type="button" id="sendOrderEmailButton" onclick="sendOrderConfirmationEmail()">ENVIAR E-MAIL DE CONFIRMAÇÃO</button>
   </div>
+  <button class="admin-cancel-btn" type="button" onclick="cancelAdminOrder()">CANCELAR PEDIDO DEFINITIVAMENTE</button>
   <p id="adminOrderMessage"></p>
  </div>
 </div>
@@ -591,15 +592,16 @@ document.getElementById('productForm').addEventListener('submit',async e=>{
  msg.textContent='Produto cadastrado com '+imageUrls.length+' foto(s) e '+variants.length+' combinações!';e.target.reset();uniqueSize.checked=true;sizeInput.value='Tamanho único';sizeInput.disabled=true;renderVariantStockMatrix();submit.disabled=false;submit.textContent='CADASTRAR PRODUTO';loadProducts();
 });
 
-let activeAdminOrderId=null;
+let activeAdminOrderId=null,adminOrdersTab='active';
 async function loadAdminOrders(){
  const el=document.getElementById('adminOrders');el.textContent='Carregando pedidos...';
  const {data,error}=await supabaseClient.from('orders').select('id,created_at,customer_name,customer_phone,phone,status,total,payment_method,payment_status,confirmation_email_sent_at').order('created_at',{ascending:false}).limit(100);
  if(error){el.textContent='Não foi possível carregar pedidos.';return}
  const orders=data||[],active=orders.filter(o=>o.status!=='Cancelado'),cancelled=orders.filter(o=>o.status==='Cancelado');
- const card=o=>`<div class="admin-order" role="button" tabindex="0" onclick="openAdminOrder('${o.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAdminOrder('${o.id}')}"><strong>#${o.id} — ${safe(o.customer_name)}</strong><br>${safe(o.customer_phone||o.phone||'Sem telefone')} • ${safe(o.status||'Pedido recebido')} • ${money(o.total)}<br><small>Pagamento: ${safe(paymentName(o.payment_method))} • ${safe(o.payment_status||'Aguardando confirmação')}</small><br><small>${new Date(o.created_at).toLocaleString('pt-BR')} • Abrir detalhes ↗</small></div>`;
- el.innerHTML='<h3>Pedidos ativos — clique para abrir</h3>'+(active.length?active.map(card).join(''):'Nenhum pedido ativo.')+'<details style="margin-top:18px"><summary style="cursor:pointer;font-weight:700;padding:12px 0">Pedidos cancelados ('+cancelled.length+')</summary><div>'+(cancelled.length?cancelled.map(card).join(''):'Nenhum pedido cancelado.')+'</div></details>';
+ const card=o=>`<div class="admin-order" role="button" tabindex="0" onclick="openAdminOrder('${o.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAdminOrder('${o.id}')}"><strong>#${o.id} — ${safe(o.customer_name)}</strong><br>${safe(o.customer_phone||o.phone||'Sem telefone')} • ${money(o.total)}<br><small>Pagamento: ${safe(paymentName(o.payment_method))} • ${safe(o.payment_status||'Aguardando confirmação')}</small><br><small>${new Date(o.created_at).toLocaleString('pt-BR')} • Abrir detalhes ↗</small></div>`;
+ el.innerHTML='<h3>Pedidos da loja</h3><div class="admin-order-tabs"><button type="button" class="admin-order-tab '+(adminOrdersTab==='active'?'active':'')+'" onclick="showAdminOrdersTab(\'active\')">PEDIDOS ATIVOS ('+active.length+')</button><button type="button" class="admin-order-tab '+(adminOrdersTab==='cancelled'?'active':'')+'" onclick="showAdminOrdersTab(\'cancelled\')">PEDIDOS CANCELADOS ('+cancelled.length+')</button></div><div class="admin-order-list">'+((adminOrdersTab==='active'?active:cancelled).length?(adminOrdersTab==='active'?active:cancelled).map(card).join(''):(adminOrdersTab==='active'?'Nenhum pedido ativo.':'Nenhum pedido cancelado.'))+'</div>';
 }
+function showAdminOrdersTab(tab){adminOrdersTab=tab;loadAdminOrders()}
 function closeAdminOrder(){document.getElementById('adminOrderModal').classList.add('hidden');activeAdminOrderId=null}
 async function openAdminOrder(orderId){
  activeAdminOrderId=orderId;
@@ -619,21 +621,28 @@ async function openAdminOrder(orderId){
 async function saveAdminOrderStatus(){
  if(!activeAdminOrderId)return;
  const status=document.getElementById('adminOrderStatus').value,msg=document.getElementById('adminOrderMessage');
- msg.textContent='Salvando status...';
- let error=null;
- if(status==='Cancelado'){
-  const result=await supabaseClient.rpc('cancel_store_order',{p_order_id:activeAdminOrderId});error=result.error;
- }else{
-  const result=await supabaseClient.from('orders').update({status}).eq('id',activeAdminOrderId);error=result.error;
- }
- if(error){msg.textContent='Não consegui salvar o status: '+error.message;return}
- msg.textContent=status==='Cancelado'?'Pedido cancelado e estoque devolvido!':'Status atualizado!';
+ msg.textContent='Salvando etapa do pedido...';
+ const {error}=await supabaseClient.from('orders').update({status}).eq('id',activeAdminOrderId);
+ if(error){msg.textContent='Não consegui atualizar a etapa: '+error.message;return}
+ msg.textContent='Etapa atualizada!';
  await loadAdminOrders();
  if(status==='Pedido confirmado'){
   msg.textContent='Pedido confirmado. Tentando enviar o e-mail...';
   await sendOrderConfirmationEmail();
  }
- if(status==='Cancelado')await openAdminOrder(activeAdminOrderId);
+}
+async function cancelAdminOrder(){
+ if(!activeAdminOrderId)return;
+ const msg=document.getElementById('adminOrderMessage');
+ if(!confirm('Cancelar este pedido de verdade? Ele sairá dos pedidos ativos, o estoque será devolvido e o pedido ficará registrado na aba de cancelados.'))return;
+ msg.textContent='Cancelando pedido e devolvendo o estoque...';
+ const {error}=await supabaseClient.rpc('cancel_store_order',{p_order_id:activeAdminOrderId});
+ if(error){msg.textContent='Não foi possível cancelar: '+error.message;return}
+ const cancelledId=activeAdminOrderId;
+ adminOrdersTab='cancelled';
+ await loadAdminOrders();
+ closeAdminOrder();
+ alert('Pedido cancelado. O estoque foi devolvido e ele foi movido para Pedidos cancelados.');
 }
 async function sendOrderConfirmationEmail(){
  if(!activeAdminOrderId)return;
