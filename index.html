@@ -97,7 +97,35 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 <div class="products" id="productGrid">
 <p>Carregando novidades...</p>
 </div>
-<div class="message" id="storeMessage"></div>
+<div class="message" id="storeMessage"><div id="recoveryPanel" class="hidden">
+  <h3>CRIAR NOVA SENHA</h3>
+
+  <form id="recoveryForm">
+    <label for="newPassword">Nova senha</label>
+    <input
+      id="newPassword"
+      type="password"
+      minlength="6"
+      placeholder="Digite sua nova senha"
+      required
+    >
+
+    <label for="confirmPassword">Confirmar nova senha</label>
+    <input
+      id="confirmPassword"
+      type="password"
+      minlength="6"
+      placeholder="Digite novamente"
+      required
+    >
+
+    <button class="submit" type="submit">
+      SALVAR NOVA SENHA ↗
+    </button>
+
+    <div id="recoveryMessage" class="message"></div>
+  </form>
+</div></div>
 </section>
 
 <section class="account-section" id="conta">
@@ -222,7 +250,41 @@ document.getElementById('authForm').addEventListener('submit',async e=>{
  }catch(error){msg.textContent=error.message||'Não foi possível concluir. Confira os dados.'}
  finally{btn.disabled=false;btn.textContent=mode==='signup'?'CRIAR MINHA CONTA ↗':'ENTRAR NA MINHA CONTA ↗'}
 });
+document.getElementById('recoveryForm').addEventListener('submit', async e => {
+  e.preventDefault();
 
+  const password = document.getElementById('newPassword').value;
+  const confirm = document.getElementById('confirmPassword').value;
+  const msg = document.getElementById('recoveryMessage');
+
+  if(password !== confirm){
+    msg.textContent = 'As senhas não são iguais.';
+    return;
+  }
+
+  msg.textContent = 'Salvando nova senha...';
+
+  const { error } = await supabaseClient.auth.updateUser({
+    password: password
+  });
+
+  if(error){
+    msg.textContent = error.message;
+    return;
+  }
+
+  await supabaseClient.auth.signOut();
+
+  document.getElementById('recoveryPanel').classList.add('hidden');
+  document.getElementById('authForm').classList.remove('hidden');
+
+  setMode('login');
+
+  document.getElementById('message').textContent =
+    'Senha alterada! Entre com a nova senha. ❤️‍🔥';
+
+  await refreshAuth();
+});
  async function refreshAuth(){
  let {data:{session}}=await supabaseClient.auth.getSession(),logged=!!session;
  document.getElementById('authPanel').classList.toggle('hidden',logged);
@@ -336,7 +398,20 @@ async function loadAdminOrders(){
  if(error){el.textContent='Não foi possível carregar pedidos.';return}
  el.innerHTML='<h3>Pedidos recebidos</h3>'+ (data.length?data.map(o=>`<div class="order-row">#${o.id} — ${safe(o.customer_name)}<br>${safe(o.phone)} • ${safe(o.status)} • ${money(o.total)}<br>${new Date(o.created_at).toLocaleString('pt-BR')}</div>`).join(''):'Nenhum pedido ainda.');
 }
-supabaseClient.auth.onAuthStateChange(()=>refreshAuth());
+
+supabaseClient.auth.onAuthStateChange((event) => {
+  if(event === 'PASSWORD_RECOVERY'){
+    document.getElementById('authPanel').classList.remove('hidden');
+    document.getElementById('loggedPanel').classList.add('hidden');
+    document.getElementById('recoveryPanel').classList.remove('hidden');
+    document.getElementById('authForm').classList.add('hidden');
+    document.getElementById('message').textContent = '';
+    return;
+  }
+
+  setTimeout(refreshAuth, 0);
+});
+
 refreshAuth();loadProducts();saveCart();
 </script>
 </body>
