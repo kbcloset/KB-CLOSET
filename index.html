@@ -516,9 +516,13 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
 async function loadMyOrders(){
  document.getElementById('ordersPanel').classList.remove('hidden');let list=document.getElementById('ordersList');list.textContent='Carregando...';
  let {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;
- let {data,error}=await supabaseClient.from('orders').select('id,created_at,status,total,delivery_fee,payment_method,payment_status').eq('user_id',user.id).order('created_at',{ascending:false});
+ let {data,error}=await supabaseClient.from('orders').select('id,created_at,status,total,delivery_fee,payment_method,payment_status,mercadopago_payment_id').eq('user_id',user.id).order('created_at',{ascending:false});
  if(error){list.textContent='Não foi possível carregar seus pedidos.';return}
- list.innerHTML=data.length?data.map(o=>`<div class="order-row">Pedido #${o.id}<br>${new Date(o.created_at).toLocaleDateString('pt-BR')} • ${safe(o.status)}<br>Total: ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>Status do pagamento: ${safe(o.payment_status||'Aguardando confirmação')}</div>`).join(''):'Você ainda não tem pedidos.';
+ list.innerHTML=data.length?data.map(o=>`<div class="order-row">Pedido #${o.id}<br>${new Date(o.created_at).toLocaleDateString('pt-BR')} • ${safe(o.status)}<br>Total: ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>Status do pagamento: ${safe(o.payment_status||'Aguardando confirmação')}${o.payment_method==='pix'&&!o.mercadopago_payment_id&&!/pago/i.test(o.payment_status||'')?`<br><button type="button" class="copy-pix" onclick="retryExistingPix('${o.id}')">GERAR PIX DESTE PEDIDO</button>`:''}</div>`).join(''):'Você ainda não tem pedidos.';
+}
+async function retryExistingPix(orderId){
+ const result=await generatePixForOrder(orderId);
+ if(result)document.getElementById('checkoutMessage').textContent='Pix gerado para o pedido #'+orderId+'. Faça o pagamento pelo QR Code ou código copia e cola.';
 }
 function parseList(id){return [...new Set(document.getElementById(id).value.split(',').map(x=>x.trim()).filter(Boolean))]}
 function renderVariantStockMatrix(){
