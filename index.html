@@ -201,6 +201,13 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 <option value="Taguatinga">Taguatinga — R$ 15</option>
 <option value="Outro">Outra região do DF — combinar</option>
 </select>
+<label>Forma de pagamento</label>
+<select id="buyerPayment" required>
+<option value="">Selecione a forma de pagamento</option>
+<option value="pix">Pix — combinar pelo WhatsApp</option>
+<option value="card_delivery">Cartão de crédito na entrega (Ton)</option>
+<option value="card_link">Cartão de crédito por link da Ton</option>
+</select>
 <p id="deliveryInfo"></p>
 <button class="submit" type="submit">FINALIZAR PEDIDO ↗</button>
 </form>
@@ -380,14 +387,19 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
  let {data:{user}}=await supabaseClient.auth.getUser();
  if(!user){msg.textContent='Entre na sua conta antes de finalizar o pedido.';closeCart();goToAccount();return}
  if(!cart.length){msg.textContent='Sua sacola está vazia.';return}
- let zone=document.getElementById('buyerZone').value,rate=rates[zone];
+ let zone=document.getElementById('buyerZone').value,rate=rates[zone],payment=document.getElementById('buyerPayment').value;
  if(!zone){msg.textContent='Selecione sua região de entrega.';return}
  if(rate===null){msg.textContent='Para outra região, fale com a KB Closet para combinar o frete antes de finalizar.';return}
- let payload={p_customer_name:document.getElementById('buyerName').value.trim(),p_phone:document.getElementById('buyerPhone').value.trim(),p_address:document.getElementById('buyerAddress').value.trim(),p_zone:zone,p_delivery_fee:rate,p_items:cart.map(i=>({product_id:i.id,quantity:i.quantity}))};
+ if(!payment){msg.textContent='Selecione a forma de pagamento.';return}
+ if(payment==='card_delivery'&&zone==='Outro'){msg.textContent='Para essa região, cartão somente por link da Ton.';return}
+ let payload={p_customer_name:document.getElementById('buyerName').value.trim(),p_phone:document.getElementById('buyerPhone').value.trim(),p_address:document.getElementById('buyerAddress').value.trim(),p_delivery_zone:zone,p_items:cart.map(i=>({product_id:i.id,quantity:i.quantity}))};
  let {data,error}=await supabaseClient.rpc('create_store_order',payload);
  if(error){msg.textContent='Não foi possível registrar: '+error.message;return}
+ let {error:paymentError}=await supabaseClient.rpc('set_order_payment_method',{p_order_id:data,p_payment_method:payment});
  cart=[];saveCart();renderCart();
- msg.textContent='Pedido registrado! A KB Closet vai entrar em contato para confirmar pagamento e entrega. Pedido: '+data;
+ if(paymentError){msg.textContent='Pedido #'+data+' registrado, mas a forma de pagamento não foi salva. Fale com a KB Closet para confirmar.';return}
+ let paymentLabel={pix:'Pix (confirmar pelo WhatsApp)',card_delivery:'Cartão na entrega pela Ton',card_link:'Cartão por link da Ton'}[payment];
+ msg.textContent='Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet vai confirmar entrega e pagamento.';
 });
 async function loadMyOrders(){
  document.getElementById('ordersPanel').classList.remove('hidden');let list=document.getElementById('ordersList');list.textContent='Carregando...';
