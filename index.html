@@ -690,7 +690,7 @@ function renderAdminProducts(){
  list.innerHTML=shown.map(p=>{
   const vars=adminProductVariants[p.id]||[],stock=vars.reduce((sum,v)=>sum+Number(v.stock||0),0),photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
   const image=photos.length?'<img src="'+safe(photos[0])+'" alt="'+safe(p.name)+'">':'✦';
-  return '<article class="admin-product-card"><div class="admin-product-thumb">'+image+'</div><div class="admin-product-info"><strong>'+safe(p.name)+'</strong><small>'+safe(p.category||'Sem categoria')+' • '+money(p.price)+'<br>Estoque: '+stock+' unidade(s)<br>'+(p.active?'Na vitrine':'Arquivado')+'</small><div class="admin-product-actions"><button type="button" class="secondary" onclick="editAdminProduct(\''+p.id+'\')">EDITAR</button><button type="button" class="'+(p.active?'remove-product':'restore-product')+'" onclick="deleteOrArchiveAdminProduct(\''+p.id+'\')">'+(p.active?'REMOVER DA LOJA':'REPUBLICAR')+'</button></div></div></article>';
+  return `<article class="admin-product-card"><div class="admin-product-thumb">${image}</div><div class="admin-product-info"><strong>${safe(p.name)}</strong><small>${safe(p.category||'Sem categoria')} • ${money(p.price)}<br>Estoque: ${stock} unidade(s)<br>${p.active?'Na vitrine':'Arquivado'}</small><div class="admin-product-actions"><button type="button" class="secondary" onclick="editAdminProduct('${p.id}')">EDITAR</button><button type="button" class="${p.active?'remove-product':'restore-product'}" onclick="deleteOrArchiveAdminProduct('${p.id}')">${p.active?'REMOVER DA LOJA':'REPUBLICAR'}</button></div></div></article>`;
  }).join('');
 }
 function showAdminProductsTab(tab){adminProductsTab=tab;renderAdminProducts()}
