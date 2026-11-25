@@ -594,9 +594,11 @@ document.getElementById('productForm').addEventListener('submit',async e=>{
 let activeAdminOrderId=null;
 async function loadAdminOrders(){
  const el=document.getElementById('adminOrders');el.textContent='Carregando pedidos...';
- const {data,error}=await supabaseClient.from('orders').select('id,created_at,customer_name,customer_phone,phone,status,total,payment_method,payment_status,confirmation_email_sent_at').order('created_at',{ascending:false}).limit(50);
+ const {data,error}=await supabaseClient.from('orders').select('id,created_at,customer_name,customer_phone,phone,status,total,payment_method,payment_status,confirmation_email_sent_at').order('created_at',{ascending:false}).limit(100);
  if(error){el.textContent='Não foi possível carregar pedidos.';return}
- el.innerHTML='<h3>Pedidos recebidos — clique para abrir</h3>'+(data.length?data.map(o=>`<div class="admin-order" role="button" tabindex="0" onclick="openAdminOrder('${o.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAdminOrder('${o.id}')}"><strong>#${o.id} — ${safe(o.customer_name)}</strong><br>${safe(o.customer_phone||o.phone||'Sem telefone')} • ${safe(o.status||'Pedido recebido')} • ${money(o.total)}<br><small>Pagamento: ${safe(paymentName(o.payment_method))} • ${safe(o.payment_status||'Aguardando confirmação')}</small><br><small>${new Date(o.created_at).toLocaleString('pt-BR')} • Abrir detalhes ↗</small></div>`).join(''):'Nenhum pedido ainda.');
+ const orders=data||[],active=orders.filter(o=>o.status!=='Cancelado'),cancelled=orders.filter(o=>o.status==='Cancelado');
+ const card=o=>`<div class="admin-order" role="button" tabindex="0" onclick="openAdminOrder('${o.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAdminOrder('${o.id}')}"><strong>#${o.id} — ${safe(o.customer_name)}</strong><br>${safe(o.customer_phone||o.phone||'Sem telefone')} • ${safe(o.status||'Pedido recebido')} • ${money(o.total)}<br><small>Pagamento: ${safe(paymentName(o.payment_method))} • ${safe(o.payment_status||'Aguardando confirmação')}</small><br><small>${new Date(o.created_at).toLocaleString('pt-BR')} • Abrir detalhes ↗</small></div>`;
+ el.innerHTML='<h3>Pedidos ativos — clique para abrir</h3>'+(active.length?active.map(card).join(''):'Nenhum pedido ativo.')+'<details style="margin-top:18px"><summary style="cursor:pointer;font-weight:700;padding:12px 0">Pedidos cancelados ('+cancelled.length+')</summary><div>'+(cancelled.length?cancelled.map(card).join(''):'Nenhum pedido cancelado.')+'</div></details>';
 }
 function closeAdminOrder(){document.getElementById('adminOrderModal').classList.add('hidden');activeAdminOrderId=null}
 async function openAdminOrder(orderId){
