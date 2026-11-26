@@ -235,7 +235,7 @@ body.admin-mode #adminPanel,body.admin-mode #adminPanel:not(.hidden){display:blo
 
 /* O painel fica dentro de .account-wrap; não ocultar o contêiner no modo admin */
 body.admin-mode .account-wrap{display:block!important;visibility:visible!important;opacity:1!important}
-body.admin-mode #adminPanel{position:relative!important;inset:auto!important}
+body.admin-mode #adminPanel{position:fixed!important;inset:0!important;z-index:1000!important;overflow:auto!important;padding:24px 5%!important;background:#13090c!important;width:100%!important;max-width:none!important}
 </style>
 </head>
 <body>
@@ -768,7 +768,7 @@ async function openAdminWorkspace(){
  document.body.classList.add('admin-mode');
  quickbar.classList.add('hidden');
  panel.classList.remove('hidden');
- panel.style.display='block';panel.style.visibility='visible';panel.style.opacity='1';
+ panel.style.display='block';panel.style.visibility='visible';panel.style.opacity='1';panel.style.position='fixed';panel.style.inset='0';panel.style.zIndex='1000';panel.style.overflow='auto';panel.style.padding='24px 5%';panel.style.background='#13090c';panel.style.width='100%';panel.style.maxWidth='none';
  try{
   await showAdminSection('products');
   await loadAdminOrders();
@@ -782,7 +782,7 @@ async function openAdminWorkspace(){
 function closeAdminWorkspace(){
  document.body.classList.remove('admin-mode');
  document.getElementById('adminPanel').classList.add('hidden');
- document.getElementById('adminPanel').style.display='';
+ const panel=document.getElementById('adminPanel');panel.style.display='';panel.style.position='';panel.style.inset='';panel.style.zIndex='';panel.style.overflow='';panel.style.padding='';panel.style.background='';panel.style.width='';panel.style.maxWidth='';
  document.getElementById('adminQuickbar').classList.remove('hidden');
 }
 async function showAdminSection(section){
