@@ -466,6 +466,8 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <option value="Recanto das Emas">Recanto das Emas — R$ 15</option>
 <option value="Ceilândia">Ceilândia — R$ 20</option>
 <option value="Taguatinga">Taguatinga — R$ 15</option>
+<option value="Águas Claras">Águas Claras — R$ 18</option>
+<option value="Vicente Pires">Vicente Pires — R$ 18</option>
 <option value="Outro">Outra região do DF — combinar</option>
 </select>
 <label>Forma de pagamento</label>
@@ -509,6 +511,8 @@ const rates={
  'Recanto das Emas':15,
  'Ceilândia':20,
  'Taguatinga':15,
+ 'Águas Claras':18,
+ 'Vicente Pires':18,
  'Outro':null
 };
 
@@ -758,7 +762,7 @@ function changeQty(key,n){let i=cart.find(x=>String(x.cartKey||x.id)===String(ke
 function removeItem(key){cart=cart.filter(x=>String(x.cartKey||x.id)!==String(key));saveCart();renderCart()}
 function updateDelivery(){
  let zone=document.getElementById('buyerZone').value,rate=rates[zone],subtotal=cart.reduce((s,i)=>s+i.price*i.quantity,0);
- document.getElementById('deliveryInfo').textContent=zone?(rate===null?'Pedido pode ser finalizado. Você combinará a retirada com a KB Closet e chamará seu Uber, pagando a entrega diretamente ao motorista.':'Entrega: '+money(rate)+' • Total: '+money(subtotal+rate)):'Selecione a região para calcular a entrega.';
+ document.getElementById('deliveryInfo').textContent=zone?(rate===null?'Pedido pode ser finalizado normalmente. Quando o pedido estiver pronto, a KB Closet entrará em contato; então você poderá chamar seu Uber e pagar diretamente ao motorista.':'Entrega: '+money(rate)+' • Total: '+money(subtotal+rate)):'Selecione a região para calcular a entrega.';
 }
 document.getElementById('buyerZone').addEventListener('change',updateDelivery);
 let currentPixOrder=null;
@@ -815,11 +819,11 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
    msg.textContent='Pedido #'+data+' registrado. Preparando seu Pix...';
    const pixData=await generatePixForOrder(data);
    if(!pixData){msg.textContent='Pedido #'+data+' registrado, mas o Pix não foi gerado. Use GERAR PIX NOVAMENTE abaixo; não refaça o pedido.';return}
-   msg.textContent=zone==='Outro'?'Pedido #'+data+' registrado! Pix dos produtos gerado. Pague pelo QR Code ou código abaixo. Para a entrega, você combinará diretamente com a KB Closet e chamará seu Uber, pagando o motorista por fora.':'Pedido #'+data+' criado. Faça o pagamento pelo QR Code ou código Pix abaixo.';
+   msg.textContent=zone==='Outro'?'Pedido #'+data+' registrado! Pix dos produtos gerado. Pague pelo QR Code ou código abaixo. Quando o pedido estiver pronto, a KB Closet entrará em contato para avisar; então você poderá chamar seu Uber e pagar diretamente ao motorista.':'Pedido #'+data+' criado. Faça o pagamento pelo QR Code ou código Pix abaixo.';
    return;
  }
  let paymentLabel={card_delivery:'Cartão na entrega pela Ton',card_link:'Cartão por link da Ton'}[payment];
- msg.textContent=zone==='Outro'?'Pedido #'+data+' registrado! Você combinará a entrega diretamente com a KB Closet e chamará seu Uber, pagando o motorista por fora. Pagamento dos produtos: '+paymentLabel+'.':'Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet combinará o pagamento conforme a opção escolhida.';
+ msg.textContent=zone==='Outro'?'Pedido #'+data+' registrado! Quando o pedido estiver pronto, a KB Closet entrará em contato. Depois, você poderá chamar seu Uber para retirar o pedido e pagar diretamente ao motorista. Pagamento dos produtos: '+paymentLabel+'.':'Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet combinará o pagamento conforme a opção escolhida.';
 });
 function renderOrderTracking(status){
  const steps=['Pedido recebido','Pedido confirmado','Em preparação','Saiu para entrega','Concluído'];
