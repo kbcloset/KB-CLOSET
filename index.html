@@ -758,7 +758,7 @@ function changeQty(key,n){let i=cart.find(x=>String(x.cartKey||x.id)===String(ke
 function removeItem(key){cart=cart.filter(x=>String(x.cartKey||x.id)!==String(key));saveCart();renderCart()}
 function updateDelivery(){
  let zone=document.getElementById('buyerZone').value,rate=rates[zone],subtotal=cart.reduce((s,i)=>s+i.price*i.quantity,0);
- document.getElementById('deliveryInfo').textContent=zone?(rate===null?'Pedido pode ser finalizado. Frete e entrega serão combinados diretamente com a KB Closet após o pedido.':'Entrega: '+money(rate)+' • Total: '+money(subtotal+rate)):'Selecione a região para calcular a entrega.';
+ document.getElementById('deliveryInfo').textContent=zone?(rate===null?'Pedido pode ser finalizado. Você combinará a retirada com a KB Closet e chamará seu Uber, pagando a entrega diretamente ao motorista.':'Entrega: '+money(rate)+' • Total: '+money(subtotal+rate)):'Selecione a região para calcular a entrega.';
 }
 document.getElementById('buyerZone').addEventListener('change',updateDelivery);
 let currentPixOrder=null;
@@ -811,19 +811,15 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
  let {error:paymentError}=await supabaseClient.rpc('set_order_payment_method',{p_order_id:data,p_payment_method:payment});
  if(paymentError){msg.textContent='Pedido #'+data+' foi criado, mas não conseguimos salvar a forma de pagamento. Não envie outro pedido; fale com a KB Closet.';return}
  cart=[];saveCart();renderCart();
- if(zone==='Outro'){
-   msg.textContent='Pedido #'+data+' registrado! Como sua região tem frete a combinar, a KB Closet entrará em contato para confirmar o valor da entrega e combinar o pagamento. Não faça outro pedido.';
-   return;
- }
  if(payment==='pix'){
    msg.textContent='Pedido #'+data+' registrado. Preparando seu Pix...';
    const pixData=await generatePixForOrder(data);
-   if(!pixData){msg.textContent='Pedido #'+data+' registrado. Você pode tentar gerar o Pix novamente no painel, sem refazer o pedido.';return}
-   msg.textContent=zone==='Outro'?'Pedido #'+data+' registrado! Pix gerado. O frete será combinado diretamente com a KB Closet após o pedido.':'Pedido #'+data+' criado. Faça o pagamento pelo QR Code ou código Pix abaixo.';
+   if(!pixData){msg.textContent='Pedido #'+data+' registrado, mas o Pix não foi gerado. Use GERAR PIX NOVAMENTE abaixo; não refaça o pedido.';return}
+   msg.textContent=zone==='Outro'?'Pedido #'+data+' registrado! Pix dos produtos gerado. Pague pelo QR Code ou código abaixo. Para a entrega, você combinará diretamente com a KB Closet e chamará seu Uber, pagando o motorista por fora.':'Pedido #'+data+' criado. Faça o pagamento pelo QR Code ou código Pix abaixo.';
    return;
  }
  let paymentLabel={card_delivery:'Cartão na entrega pela Ton',card_link:'Cartão por link da Ton'}[payment];
- msg.textContent=zone==='Outro'?'Pedido #'+data+' registrado! A KB Closet entrará em contato para combinar a entrega e o frete. Pagamento: '+paymentLabel+'.':'Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet combinará o pagamento conforme a opção escolhida.';
+ msg.textContent=zone==='Outro'?'Pedido #'+data+' registrado! Você combinará a entrega diretamente com a KB Closet e chamará seu Uber, pagando o motorista por fora. Pagamento dos produtos: '+paymentLabel+'.':'Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet combinará o pagamento conforme a opção escolhida.';
 });
 function renderOrderTracking(status){
  const steps=['Pedido recebido','Pedido confirmado','Em preparação','Saiu para entrega','Concluído'];
