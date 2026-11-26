@@ -36,6 +36,7 @@ h1 em{font-style:normal;color:var(--red)}
 .products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .product{border:1px solid var(--line);background:#1a0d12;overflow:hidden;cursor:pointer}
 .product-card-art{height:300px;background:linear-gradient(145deg,#421321,#1b0b11);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.product-card-art{position:relative}.product-soldout-badge{position:absolute;left:12px;top:12px;padding:8px 12px;background:#b31332;color:#fff;font-size:11px;font-weight:900;letter-spacing:1.2px;border:1px solid #ff9eae;box-shadow:0 3px 0 #6f1024}.product-soldout-detail{display:inline-block;margin:0 0 15px;padding:9px 14px;background:#b31332;color:#fff;font-size:12px;font-weight:900;letter-spacing:1.2px;border:1px solid #ff9eae}.variant-stock-soldout{display:block!important;color:#ff9eae;font-weight:900;letter-spacing:1px;margin:8px 0;padding:10px;background:#35101b;border:1px solid #b31332;border-radius:6px}
 .product-card-art img{width:100%;height:100%;object-fit:cover}
 .product-card-info{padding:16px}.product-card-info strong{display:block;text-transform:uppercase;font-size:14px}.product-card-info small{display:block;color:var(--muted);margin-top:8px}.product-card-info .price{display:block;color:#ff9eae;margin-top:12px;font-weight:900}
 .product-detail{position:fixed;inset:0;z-index:20;background:var(--deep);overflow-y:auto;padding:18px 5% 40px}
@@ -680,10 +681,15 @@ async function loadProducts(category=''){
  adminProductVariants={};productVariants={};(variants||[]).forEach(v=>{(adminProductVariants[v.product_id]||(adminProductVariants[v.product_id]=[])).push(v);(productVariants[v.product_id]||(productVariants[v.product_id]=[])).push(v)});
  grid.innerHTML=products.map(renderProductCard).join('');products.forEach(p=>{if((productVariants[p.id]||[]).length)updateVariantOptions(p.id)});
 }
+function isProductSoldOut(p){
+ const vars=productVariants[p.id]||[];
+ return vars.length?vars.every(v=>Number(v.stock||0)<=0):Number(p.stock||0)<=0;
+}
 function renderProductCard(p){
  const photos=Array.isArray(p.image_urls)&&p.image_urls.length?p.image_urls:(p.image_url?[p.image_url]:[]);
  const image=photos.length?'<img src="'+safe(photos[0])+'" alt="'+safe(p.name)+'" loading="lazy">':'✦';
- return '<article class="product" role="button" tabindex="0" onclick="openProductDetail(\''+p.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openProductDetail(\''+p.id+'\')}"><div class="product-card-art">'+image+'</div><div class="product-card-info"><strong>'+safe(p.name)+'</strong><small>'+safe(p.category||'KB Closet')+'</small><span class="price">'+money(p.price)+'</span></div></article>';
+ const soldOut=isProductSoldOut(p),badge=soldOut?'<span class="product-soldout-badge">ESGOTADO</span>':'';
+ return '<article class="product" role="button" tabindex="0" onclick="openProductDetail(\''+p.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openProductDetail(\''+p.id+'\')}"><div class="product-card-art">'+image+badge+'</div><div class="product-card-info"><strong>'+safe(p.name)+'</strong><small>'+safe(p.category||'KB Closet')+'</small><span class="price">'+money(p.price)+'</span></div></article>';
 }
 function openProductDetail(id){
  const p=products.find(x=>String(x.id)===String(id));if(!p)return;
@@ -696,7 +702,8 @@ function openProductDetail(id){
   const colors=[...new Set(vars.map(v=>v.color))];
   selectors='<label>Cor</label><select class="variant-select" id="color-'+p.id+'" onchange="updateVariantOptions(\''+p.id+'\')">'+colors.map(v=>'<option value="'+safe(v)+'">'+safe(v)+'</option>').join('')+'</select><label>Tamanho</label><select class="variant-select" id="size-'+p.id+'" onchange="updateVariantStock(\''+p.id+'\')"></select><div class="variant-stock hidden" id="stock-'+p.id+'"></div>';
  }else selectors='<label>Cor</label><select class="variant-select" id="color-'+p.id+'"><option>Única</option></select><label>Tamanho</label><select class="variant-select" id="size-'+p.id+'"><option>Tamanho único</option></select>';
- document.getElementById('productDetailContent').innerHTML='<div class="detail-layout">'+gallery+'<div class="detail-info"><div class="eyebrow">'+safe(p.category||'KB CLOSET')+'</div><h2>'+safe(p.name)+'</h2><div class="detail-description">'+safe(p.description||'')+'</div><div class="detail-price">'+money(p.price)+'</div>'+selectors+'<button class="buy" onclick="addToCart(\''+p.id+'\')">ADICIONAR À SACOLA</button></div></div>';
+ const soldOutBadge=isProductSoldOut(p)?'<div class="product-soldout-detail">ESGOTADO</div>':'';
+ document.getElementById('productDetailContent').innerHTML='<div class="detail-layout">'+gallery+'<div class="detail-info"><div class="eyebrow">'+safe(p.category||'KB CLOSET')+'</div><h2>'+safe(p.name)+'</h2>'+soldOutBadge+'<div class="detail-description">'+safe(p.description||'')+'</div><div class="detail-price">'+money(p.price)+'</div>'+selectors+'<button class="buy" onclick="addToCart(\''+p.id+'\')">ADICIONAR À SACOLA</button></div></div>';
  document.getElementById('productDetail').classList.remove('hidden');document.body.style.overflow='hidden';
  if(vars.length)updateVariantOptions(p.id);
 }
@@ -706,8 +713,10 @@ function updateVariantOptions(id){
  const sizes=[...new Set(vars.filter(v=>v.color===color.value).map(v=>v.size))];size.innerHTML=sizes.map(v=>'<option value="'+safe(v)+'">'+safe(v)+'</option>').join('');updateVariantStock(id);
 }
 function updateVariantStock(id){
- const vars=productVariants[id]||[],color=document.getElementById('color-'+id),size=document.getElementById('size-'+id),stock=document.getElementById('stock-'+id),btn=document.getElementById('color-'+id)?.closest('.product-info')?.querySelector('.buy');if(!color||!size)return;
- const v=vars.find(x=>x.color===color.value&&x.size===size.value);if(stock)stock.textContent='';if(btn){btn.disabled=!v||Number(v.stock)<=0;btn.textContent='ADICIONAR À SACOLA'}
+ const vars=productVariants[id]||[],color=document.getElementById('color-'+id),size=document.getElementById('size-'+id),stock=document.getElementById('stock-'+id),btn=document.getElementById('color-'+id)?.closest('.detail-info, .product-info')?.querySelector('.buy');if(!color||!size)return;
+ const v=vars.find(x=>x.color===color.value&&x.size===size.value),soldOut=!!v&&Number(v.stock)<=0;
+ if(stock){stock.textContent=soldOut?'ESGOTADO':'';stock.classList.toggle('hidden',!soldOut);stock.classList.toggle('variant-stock-soldout',soldOut)}
+ if(btn){btn.disabled=!v||Number(v.stock)<=0;btn.textContent=soldOut?'ESGOTADO':'ADICIONAR À SACOLA'}
 }
 function changeProductPhoto(id,delta){
  const p=products.find(x=>x.id===id);if(!p)return;
