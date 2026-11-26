@@ -226,6 +226,12 @@ html,body{max-width:100%;overflow-x:hidden}
 #authForm label,#authForm input,#authForm button{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
 #authForm .whatsapp,#authForm .submit{display:block!important;position:relative!important;left:auto!important;right:auto!important;float:none!important;flex:0 0 auto!important;width:100%!important;max-width:100%!important;min-width:0!important;white-space:normal!important;overflow-wrap:anywhere!important;margin:14px 0 0!important;padding:15px 10px!important}
 
+
+/* Recuperação segura do painel administrativo em telas móveis */
+body.admin-mode{background:#13090c!important;color:#fff4ec!important;min-height:100vh}
+body.admin-mode main{display:block!important;min-height:100vh;background:#13090c!important}
+body.admin-mode #conta{display:block!important;min-height:100vh;background:#13090c!important;color:#fff4ec!important}
+body.admin-mode #adminPanel,body.admin-mode #adminPanel:not(.hidden){display:block!important;visibility:visible!important;opacity:1!important;min-height:100vh;color:#fff4ec!important}
 </style>
 </head>
 <body>
@@ -752,26 +758,36 @@ function renderAdminStats(){
  const pending=adminOrdersCache.filter(o=>!['Concluído','Cancelado'].includes(o.status)).length;
  document.getElementById('adminStats').innerHTML='<div class="admin-stat"><strong>'+active+'</strong><small>PRODUTOS NA VITRINE</small></div><div class="admin-stat"><strong>'+archived+'</strong><small>PRODUTOS ARQUIVADOS</small></div><div class="admin-stat"><strong>'+pending+'</strong><small>PEDIDOS EM ANDAMENTO</small></div>';
 }
-function openAdminWorkspace(){
- if(document.getElementById('adminQuickbar').classList.contains('hidden'))return;
+async function openAdminWorkspace(){
+ const quickbar=document.getElementById('adminQuickbar'),panel=document.getElementById('adminPanel');
+ if(quickbar.classList.contains('hidden'))return;
  document.body.classList.add('admin-mode');
- document.getElementById('adminQuickbar').classList.add('hidden');
- document.getElementById('adminPanel').classList.remove('hidden');
- showAdminSection('products');
- loadAdminOrders();
+ quickbar.classList.add('hidden');
+ panel.classList.remove('hidden');
+ panel.style.display='block';panel.style.visibility='visible';panel.style.opacity='1';
+ try{
+  await showAdminSection('products');
+  await loadAdminOrders();
+ }catch(error){
+  const msg=document.getElementById('adminProductListMessage');
+  if(msg)msg.textContent='O painel abriu, mas ocorreu um erro ao carregar os dados: '+(error?.message||'erro inesperado')+'.';
+  const list=document.getElementById('adminProductList');
+  if(list)list.textContent='Não foi possível carregar o inventário. Seus produtos continuam salvos.';
+ }
 }
 function closeAdminWorkspace(){
  document.body.classList.remove('admin-mode');
  document.getElementById('adminPanel').classList.add('hidden');
+ document.getElementById('adminPanel').style.display='';
  document.getElementById('adminQuickbar').classList.remove('hidden');
 }
-function showAdminSection(section){
+async function showAdminSection(section){
  const products=section==='products';
  document.getElementById('adminProductsSection').classList.toggle('hidden',!products);
  document.getElementById('adminOrdersSection').classList.toggle('hidden',products);
  document.getElementById('adminProductsTab').classList.toggle('active',products);
  document.getElementById('adminOrdersTab').classList.toggle('active',!products);
- if(products)loadAdminProducts();else loadAdminOrders();
+ if(products)await loadAdminProducts();else await loadAdminOrders();
 }
 async function loadAdminProducts(){
  const list=document.getElementById('adminProductList'),msg=document.getElementById('adminProductListMessage');
