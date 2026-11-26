@@ -937,10 +937,13 @@ async function loadAdminOrders(){
  el.innerHTML='<h3>Pedidos da loja</h3><div class="admin-order-tabs"><button type="button" class="admin-order-tab '+(adminOrdersTab==='active'?'active':'')+'" onclick="showAdminOrdersTab(\'active\')">PEDIDOS ATIVOS ('+active.length+')</button><button type="button" class="admin-order-tab '+(adminOrdersTab==='cancelled'?'active':'')+'" onclick="showAdminOrdersTab(\'cancelled\')">PEDIDOS CANCELADOS ('+cancelled.length+')</button></div><div class="admin-order-list">'+((adminOrdersTab==='active'?active:cancelled).length?(adminOrdersTab==='active'?active:cancelled).map(card).join(''):(adminOrdersTab==='active'?'Nenhum pedido ativo.':'Nenhum pedido cancelado.'))+'</div>';
 }
 function showAdminOrdersTab(tab){adminOrdersTab=tab;loadAdminOrders()}
-function closeAdminOrder(){document.getElementById('adminOrderModal').classList.add('hidden');activeAdminOrderId=null}
+function closeAdminOrder(){const m=document.getElementById('adminOrderModal');m.classList.add('hidden');m.style.cssText='';activeAdminOrderId=null}
 async function openAdminOrder(orderId){
  activeAdminOrderId=orderId;
  const modal=document.getElementById('adminOrderModal'),detail=document.getElementById('adminOrderDetail'),msg=document.getElementById('adminOrderMessage');
+ /* Coloca o modal direto no body para escapar de qualquer camada/contêiner do painel. */
+ document.body.appendChild(modal);
+ modal.style.cssText+=';position:fixed;inset:0;z-index:99999;display:flex';
  modal.classList.remove('hidden');detail.textContent='Carregando detalhes...';msg.textContent='';
  const [{data:o,error},{data:items,error:itemError}]=await Promise.all([
   supabaseClient.from('orders').select('id,created_at,customer_name,customer_email,customer_phone,phone,delivery_address,address,delivery_zone,subtotal,delivery_fee,total,status,payment_method,payment_status,confirmation_email_sent_at').eq('id',orderId).maybeSingle(),
