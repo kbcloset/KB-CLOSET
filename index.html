@@ -71,6 +71,7 @@ label{display:block;font-size:10px;letter-spacing:1px;text-transform:uppercase;m
 input,select,textarea{width:100%;padding:14px;background:#10080b;border:1px solid #57303d;color:white;font-size:14px}
 .submit{width:100%;padding:15px;background:var(--red);color:white;margin-top:18px;letter-spacing:1px}
 .message{font-size:13px;line-height:1.5;margin-top:15px;color:#ffc2cc;min-height:20px}
+.cart-toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));z-index:150000;width:min(92vw,480px);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 15px;background:#241018;border:1px solid #ff9eae;border-left:5px solid var(--red);box-shadow:0 12px 38px #0009;color:#fff4ec;font-size:14px;font-weight:800;opacity:0;visibility:hidden;transform:translate(-50%,18px);transition:opacity .2s,transform .2s,visibility .2s;pointer-events:none}.cart-toast.show{opacity:1;visibility:visible;transform:translate(-50%,0);pointer-events:auto}.cart-toast button{flex-shrink:0;padding:10px 12px;background:var(--red);color:#fff;border-radius:7px;font-size:10px;letter-spacing:.6px}
 .hidden{display:none!important}
 .logged{padding:18px;border:1px solid #57303d;background:#13090c;line-height:1.6}
 .logged button,.secondary{margin-top:12px;background:transparent;border:1px solid #73515b;color:white;padding:10px 14px}
@@ -282,6 +283,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <body>
 <div id="storeClosedOverlay" class="store-closed-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="storeClosedTitle"><div class="store-closed-card"><div class="logo">KB<span style="color:var(--red)">.</span> CLOSET 🍒</div><h1 id="storeClosedTitle">SITE TRANCADO!</h1><p class="store-instagram">Verifique nosso Instagram<br><a href="https://www.instagram.com/kb.closet061/" target="_blank" rel="noopener">@kb.closet061</a></p><form id="storeUnlockForm" onsubmit="unlockStore(event)"><label for="storeAccessPassword">Senha de acesso</label><input id="storeAccessPassword" type="password" autocomplete="current-password" required placeholder="Digite a senha"><button class="submit" type="submit" id="storeUnlockButton">DESTRAVAR</button><p id="storeUnlockMessage" role="status" class="store-unlock-message"></p></form></div></div>
 <div class="topline" aria-label="Too hot to be basic. Seu próximo look favorito. KB Closet"><div class="topline-track"><div class="topline-copy"><span>TOO HOT TO BE BASIC 🍒</span><span class="marquee-separator">✦</span><span>SEU PRÓXIMO LOOK FAVORITO</span><span class="marquee-separator">✦</span><span>KB CLOSET</span><span class="marquee-separator">✦</span></div><div class="topline-copy" aria-hidden="true"><span>TOO HOT TO BE BASIC 🍒</span><span class="marquee-separator">✦</span><span>SEU PRÓXIMO LOOK FAVORITO</span><span class="marquee-separator">✦</span><span>KB CLOSET</span><span class="marquee-separator">✦</span></div></div>
+<div id="cartToast" class="cart-toast" role="status" aria-live="polite"><span id="cartToastText">Adicionado à sacola!</span><button type="button" onclick="openCart()">VER SACOLA</button></div>
 <header>
 <button class="menu-toggle" type="button" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" onclick="toggleSiteMenu()"><span></span><span></span><span></span></button>
 <div class="logo">KB<span>.</span> CLOSET</div>
@@ -727,6 +729,8 @@ function changeProductPhoto(id,delta){
  if(img)img.src=photos[i];if(count)count.textContent=(i+1)+'/'+photos.length;
 }
 function safe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+let cartToastTimer=null;
+function showCartToast(text){const toast=document.getElementById('cartToast'),label=document.getElementById('cartToastText');if(!toast||!label)return;label.textContent=text;toast.classList.add('show');clearTimeout(cartToastTimer);cartToastTimer=setTimeout(()=>toast.classList.remove('show'),5000);}
 function filterCategory(category){document.getElementById('productHeading').textContent=category.toUpperCase();loadProducts(category);document.getElementById('novidades').scrollIntoView({behavior:'smooth'})}
 function saveCart(){localStorage.setItem("kb_cart",JSON.stringify(cart));document.getElementById("cartCount").textContent=cart.reduce((n,i)=>n+i.quantity,0)}
 function addToCart(id){
@@ -737,7 +741,7 @@ function addToCart(id){
  const cartKey=variant?String(p.id)+'_'+variant.id:String(p.id);let item=cart.find(x=>(x.cartKey||String(x.id))===cartKey);
  if(item){if(variant&&item.quantity>=Number(variant.stock)){document.getElementById('storeMessage').textContent='Não há mais estoque dessa combinação.';return}item.quantity++}
  else cart.push({cartKey,id:p.id,variant_id:variant?.id||null,color:variant?.color||color,size:variant?.size||size,name:p.name,price:Number(p.price),quantity:1});
- saveCart();document.getElementById('storeMessage').textContent='Peça adicionada à sua sacola! ❤️‍🔥'
+ saveCart();document.getElementById('storeMessage').textContent='Peça adicionada à sua sacola! ❤️‍🔥';showCartToast('ADICIONADO À SACOLA! ❤️‍🔥 '+p.name)
 }
 function openCart(){renderCart();document.getElementById('cartLayer').classList.remove('hidden')}
 function closeCart(){document.getElementById('cartLayer').classList.add('hidden')}
@@ -754,7 +758,7 @@ function changeQty(key,n){let i=cart.find(x=>String(x.cartKey||x.id)===String(ke
 function removeItem(key){cart=cart.filter(x=>String(x.cartKey||x.id)!==String(key));saveCart();renderCart()}
 function updateDelivery(){
  let zone=document.getElementById('buyerZone').value,rate=rates[zone],subtotal=cart.reduce((s,i)=>s+i.price*i.quantity,0);
- document.getElementById('deliveryInfo').textContent=zone?(rate===null?'Frete a combinar via Uber Moto.':'Entrega: '+money(rate)+' • Total: '+money(subtotal+rate)):'Selecione a região para calcular a entrega.';
+ document.getElementById('deliveryInfo').textContent=zone?(rate===null?'Pedido pode ser finalizado. Frete e entrega serão combinados diretamente com a KB Closet após o pedido.':'Entrega: '+money(rate)+' • Total: '+money(subtotal+rate)):'Selecione a região para calcular a entrega.';
 }
 document.getElementById('buyerZone').addEventListener('change',updateDelivery);
 let currentPixOrder=null;
@@ -792,9 +796,7 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
  if(!cart.length){msg.textContent='Sua sacola está vazia.';return}
  let zone=document.getElementById('buyerZone').value,rate=rates[zone],payment=document.getElementById('buyerPayment').value;
  if(!zone){msg.textContent='Selecione sua região de entrega.';return}
- if(rate===null){msg.textContent='Para outra região, fale com a KB Closet para combinar o frete antes de finalizar.';return}
  if(!payment){msg.textContent='Selecione a forma de pagamento.';return}
- if(payment==='card_delivery'&&zone==='Outro'){msg.textContent='Para essa região, cartão somente por link da Ton.';return}
  let payload={p_customer_name:document.getElementById('buyerName').value.trim(),p_phone:document.getElementById('buyerPhone').value.trim(),p_address:document.getElementById('buyerAddress').value.trim(),p_delivery_zone:zone,p_items:cart.map(i=>({product_id:i.id,variant_id:i.variant_id,color:i.color,size:i.size,quantity:i.quantity}))};
  let {data,error}=await supabaseClient.rpc('create_store_order',payload);
  if(error){
@@ -813,11 +815,11 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
    msg.textContent='Pedido #'+data+' registrado. Preparando seu Pix...';
    const pixData=await generatePixForOrder(data);
    if(!pixData){msg.textContent='Pedido #'+data+' registrado. Você pode tentar gerar o Pix novamente no painel, sem refazer o pedido.';return}
-   msg.textContent='Pedido #'+data+' criado. Faça o pagamento pelo QR Code ou código Pix abaixo.';
+   msg.textContent=zone==='Outro'?'Pedido #'+data+' registrado! Pix gerado. O frete será combinado diretamente com a KB Closet após o pedido.':'Pedido #'+data+' criado. Faça o pagamento pelo QR Code ou código Pix abaixo.';
    return;
  }
  let paymentLabel={card_delivery:'Cartão na entrega pela Ton',card_link:'Cartão por link da Ton'}[payment];
- msg.textContent='Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet combinará o pagamento conforme a opção escolhida.';
+ msg.textContent=zone==='Outro'?'Pedido #'+data+' registrado! A KB Closet entrará em contato para combinar a entrega e o frete. Pagamento: '+paymentLabel+'.':'Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet combinará o pagamento conforme a opção escolhida.';
 });
 function renderOrderTracking(status){
  const steps=['Pedido recebido','Pedido confirmado','Em preparação','Saiu para entrega','Concluído'];
