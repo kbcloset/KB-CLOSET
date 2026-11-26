@@ -769,9 +769,8 @@ async function retryPixPayment(){
  finally{button.disabled=false}
 }
 async function copyPixCode(){
- const code=document.getElementById('pixCode').value;if(!code)return;
- try{await navigator.clipboard.writeText(code);document.getElementById('pixOrderStatus').textContent='Código Pix copiado! Abra o app do banco para pagar.'}
- catch{document.getElementById('pixOrderStatus').textContent='Selecione e copie o código Pix manualmente.'}
+ const area=document.getElementById('pixCode'),status=document.getElementById('pixOrderStatus'),button=document.querySelector('#pixPanel .copy-pix:not(.hidden)');
+ await copyTextPix(area.value,area,status,button);
 }
 document.getElementById('checkoutForm').addEventListener('submit',async e=>{
  e.preventDefault();let msg=document.getElementById('checkoutMessage');msg.textContent='';
@@ -821,10 +820,30 @@ function renderSavedOrderPix(o){
  const ticket=o.pix_ticket_url&&/^https:\/\//i.test(o.pix_ticket_url)?'<a href="'+safe(o.pix_ticket_url)+'" target="_blank" rel="noopener">ABRIR PAGAMENTO NO MERCADO PAGO ↗</a>':'';
  return '<div class="pix-panel order-pix"><h4>PIX DO PEDIDO</h4><p>Escaneie o QR Code ou copie o código abaixo para pagar.</p>'+qr+'<textarea class="pix-code" readonly aria-label="Código Pix do pedido">'+safe(o.pix_qr_code)+'</textarea><button type="button" class="copy-pix" onclick="copyOrderPix(this)">COPIAR CÓDIGO PIX</button><p class="order-pix-copy-status" role="status"></p>'+ticket+'</div>';
 }
+async function copyTextPix(code,area,status,button){
+ if(!code){status.textContent='O código Pix ainda não está disponível.';return}
+ const original=button.textContent;button.disabled=true;button.textContent='COPIANDO...';
+ try{
+  if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(code)}
+  else throw new Error('clipboard indisponível');
+  status.textContent='Código Pix copiado! Abra o app do banco para pagar.';
+  button.textContent='CÓDIGO COPIADO ✓';
+ }catch{
+  try{
+   area.focus();area.select();area.setSelectionRange(0,area.value.length);
+   const copied=document.execCommand('copy');
+   if(copied){status.textContent='Código Pix copiado! Abra o app do banco para pagar.';button.textContent='CÓDIGO COPIADO ✓'}
+   else{status.textContent='Código selecionado. Toque e segure no código e escolha “Copiar”.';button.textContent='COPIAR CÓDIGO PIX'}
+  }catch{
+   area.focus();area.select();area.setSelectionRange(0,area.value.length);
+   status.textContent='Código selecionado. Toque e segure no código e escolha “Copiar”.';button.textContent='COPIAR CÓDIGO PIX'
+  }
+ }
+ button.disabled=false;
+}
 async function copyOrderPix(button){
- const panel=button.closest('.order-pix'),code=panel.querySelector('textarea').value,status=panel.querySelector('.order-pix-copy-status');
- try{await navigator.clipboard.writeText(code);status.textContent='Código Pix copiado! Abra o app do banco para pagar.'}
- catch{const area=panel.querySelector('textarea');area.focus();area.select();status.textContent='Selecione e copie o código Pix manualmente.'}
+ const panel=button.closest('.order-pix'),area=panel.querySelector('textarea'),status=panel.querySelector('.order-pix-copy-status');
+ await copyTextPix(area.value,area,status,button);
 }
 async function loadMyOrders(){
  document.getElementById('ordersPanel').classList.remove('hidden');let list=document.getElementById('ordersList');list.textContent='Carregando...';
