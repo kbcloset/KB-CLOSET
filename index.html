@@ -236,6 +236,15 @@ body.admin-mode #adminPanel,body.admin-mode #adminPanel:not(.hidden){display:blo
 /* O painel fica dentro de .account-wrap; não ocultar o contêiner no modo admin */
 body.admin-mode .account-wrap{display:block!important;visibility:visible!important;opacity:1!important}
 body.admin-mode #adminPanel{position:fixed!important;inset:0!important;z-index:1000!important;overflow:auto!important;padding:24px 5%!important;background:#13090c!important;width:100%!important;max-width:none!important}
+
+/* Correção de overflow no checkout/Pix em telas estreitas */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+.cart-box{width:100%;max-width:100vw;overflow-x:hidden}
+.cart-content{width:100%;max-width:430px;min-width:0;box-sizing:border-box;overflow-x:hidden}
+#checkoutForm,#checkoutForm>* ,.pix-panel,.pix-panel>*{min-width:0;max-width:100%;box-sizing:border-box}
+#checkoutMessage,.message,#pixOrderStatus,.pix-panel p{overflow-wrap:anywhere;word-break:break-word}
+.pix-panel textarea,.pix-panel button,.pix-panel a{width:100%;max-width:100%;min-width:0;box-sizing:border-box;white-space:normal;overflow-wrap:anywhere}
+.pix-panel img{max-width:100%;height:auto}
 </style>
 </head>
 <body>
