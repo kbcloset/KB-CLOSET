@@ -811,6 +811,10 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
  let {error:paymentError}=await supabaseClient.rpc('set_order_payment_method',{p_order_id:data,p_payment_method:payment});
  if(paymentError){msg.textContent='Pedido #'+data+' foi criado, mas não conseguimos salvar a forma de pagamento. Não envie outro pedido; fale com a KB Closet.';return}
  cart=[];saveCart();renderCart();
+ if(zone==='Outro'){
+   msg.textContent='Pedido #'+data+' registrado! Como sua região tem frete a combinar, a KB Closet entrará em contato para confirmar o valor da entrega e combinar o pagamento. Não faça outro pedido.';
+   return;
+ }
  if(payment==='pix'){
    msg.textContent='Pedido #'+data+' registrado. Preparando seu Pix...';
    const pixData=await generatePixForOrder(data);
