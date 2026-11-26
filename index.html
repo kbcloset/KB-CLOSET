@@ -79,6 +79,21 @@ input,select,textarea{width:100%;padding:14px;background:#10080b;border:1px soli
 .cart-box{position:fixed;inset:0;background:#000b;z-index:10;display:flex;justify-content:flex-end}
 .cart-content{background:#1a0d12;width:min(100%,430px);height:100%;overflow:auto;padding:24px}
 .cart-row,.order-row{border-bottom:1px solid var(--line);padding:14px 0;line-height:1.6}
+.order-tracking{margin:14px 0;padding:14px;background:#10080b;border:1px solid #382027;border-radius:10px}
+.tracking-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:10px;letter-spacing:1.2px;color:var(--muted);margin-bottom:14px}
+.tracking-heading strong{color:#ff9eae;text-align:right;font-size:11px;letter-spacing:0}
+.tracking-steps{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.tracking-steps li{display:grid;grid-template-columns:16px minmax(0,1fr);gap:10px;position:relative;min-height:31px;color:#79666b;font-size:12px}
+.tracking-steps li:not(:last-child)::before{content:"";position:absolute;left:6px;top:13px;bottom:-1px;width:2px;background:#382027}
+.tracking-dot{width:14px;height:14px;border:2px solid #56303b;border-radius:50%;background:#10080b;z-index:1}
+.tracking-steps li.done{color:#d8c5c5}
+.tracking-steps li.done .tracking-dot{background:#e32645;border-color:#e32645}
+.tracking-steps li.done:not(:last-child)::before{background:#e32645}
+.tracking-steps li.current{color:#fff;font-weight:800}
+.tracking-steps li.current .tracking-dot{border-color:#ff9eae;box-shadow:0 0 0 4px #e3264522}
+.tracking-note{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
+.order-tracking.cancelled{border-color:#8f1730}
+.order-tracking.cancelled strong{color:#ff9eae}
 .admin-order{cursor:pointer;border:1px solid var(--line);padding:15px;margin:10px 0;background:#1a0d12;transition:border-color .2s}
 .admin-order:hover{border-color:#d98b9f}
 .admin-order:focus{outline:2px solid #d98b9f;outline-offset:2px}
@@ -614,12 +629,20 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
  let paymentLabel={card_delivery:'Cartão na entrega pela Ton',card_link:'Cartão por link da Ton'}[payment];
  msg.textContent='Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet combinará o pagamento conforme a opção escolhida.';
 });
+function renderOrderTracking(status){
+ const steps=['Pedido recebido','Pedido confirmado','Em preparação','Saiu para entrega','Concluído'];
+ if(status==='Cancelado')return `<div class="order-tracking cancelled"><div class="tracking-heading"><span>ACOMPANHAMENTO DO PEDIDO</span><strong>Pedido cancelado</strong></div><p class="tracking-note">Este pedido foi cancelado. Se precisar de ajuda, entre em contato com a KB Closet.</p></div>`;
+ const current=Math.max(0,steps.indexOf(status));
+ const label=steps.includes(status)?status:'Pedido recebido';
+ const note=current===4?'Seu pedido foi concluído. Obrigada por comprar na KB Closet!':current===3?'Seu pedido saiu para entrega. Fique de olho!':current===2?'Estamos preparando seu pedido com carinho.':current===1?'Seu pedido foi confirmado e seguirá para preparação.':'Recebemos seu pedido. Assim que ele for confirmado, a próxima etapa aparecerá aqui';
+ return `<div class="order-tracking"><div class="tracking-heading"><span>ACOMPANHAMENTO DO PEDIDO</span><strong>${safe(label)}</strong></div><ol class="tracking-steps">${steps.map((step,i)=>`<li class="${i<current?'done':i===current?'current':'pending'}"><span class="tracking-dot"></span><span>${safe(step)}</span></li>`).join('')}</ol><p class="tracking-note">${note}</p></div>`;
+}
 async function loadMyOrders(){
  document.getElementById('ordersPanel').classList.remove('hidden');let list=document.getElementById('ordersList');list.textContent='Carregando...';
  let {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;
  let {data,error}=await supabaseClient.from('orders').select('id,created_at,status,total,delivery_fee,payment_method,payment_status,mercadopago_payment_id').eq('user_id',user.id).order('created_at',{ascending:false});
  if(error){list.textContent='Não foi possível carregar seus pedidos.';return}
- list.innerHTML=data.length?data.map(o=>`<div class="order-row">Pedido #${o.id}<br>${new Date(o.created_at).toLocaleDateString('pt-BR')} • ${safe(o.status)}<br>Total: ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>Status do pagamento: ${safe(o.payment_status||'Aguardando confirmação')}${o.payment_method==='pix'&&!o.mercadopago_payment_id&&!/pago/i.test(o.payment_status||'')?`<br><button type="button" class="copy-pix" onclick="retryExistingPix('${o.id}')">GERAR PIX DESTE PEDIDO</button>`:''}${['Pedido recebido','Pedido confirmado'].includes(o.status)?`<br><button type="button" class="secondary" onclick="cancelMyOrder('${o.id}')">CANCELAR MEU PEDIDO</button>`:''}</div>`).join(''):'Você ainda não tem pedidos.';
+ list.innerHTML=data.length?data.map(o=>`<div class="order-row"><strong>Pedido #${safe(o.id)}</strong><br>${new Date(o.created_at).toLocaleDateString('pt-BR')}<br>${renderOrderTracking(o.status||'Pedido recebido')}<br>Total: ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>Status do pagamento: ${safe(o.payment_status||'Aguardando confirmação')}${o.payment_method==='pix'&&!o.mercadopago_payment_id&&!/pago/i.test(o.payment_status||'')?`<br><button type="button" class="copy-pix" onclick="retryExistingPix('${o.id}')">GERAR PIX DESTE PEDIDO</button>`:''}${['Pedido recebido','Pedido confirmado'].includes(o.status)?`<br><button type="button" class="secondary" onclick="cancelMyOrder('${o.id}')">CANCELAR MEU PEDIDO</button>`:''}</div>`).join(''):'Você ainda não tem pedidos';
 }
 async function cancelMyOrder(orderId){
  if(!confirm('Tem certeza que deseja cancelar este pedido?'))return;
