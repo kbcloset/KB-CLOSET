@@ -75,7 +75,7 @@ input,select,textarea{width:100%;padding:14px;background:#10080b;border:1px soli
 .panel{max-width:900px;margin:25px auto;padding:20px;border:1px solid var(--line);background:#1a0d12}
 .panel h3{margin-top:0}
 .panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.cart{position:fixed;right:15px;bottom:15px;z-index:5;background:var(--red);color:white;padding:15px 20px;box-shadow:0 5px 25px #0008}
+.cart{background:var(--red);color:white;padding:12px 15px;font-size:11px;letter-spacing:1px;white-space:nowrap}.header-actions{display:flex;align-items:center;gap:9px}.menu-toggle{background:transparent;border:1px solid #73515b;color:white;padding:10px 13px;font-size:22px;line-height:1}.site-menu{position:absolute;right:6%;top:78px;z-index:25;width:min(280px,90vw);background:#1a0d12;border:1px solid #57303d;box-shadow:0 12px 35px #0009;padding:8px}.site-menu a,.site-menu button{display:block;width:100%;text-align:left;padding:14px;background:transparent;color:var(--cream);text-decoration:none;font-size:12px;letter-spacing:.5px;border-bottom:1px solid #382027}.site-menu a:last-child,.site-menu button:last-child{border-bottom:0}.site-menu a:hover,.site-menu button:hover{background:#35101b}.support-modal{position:fixed;inset:0;z-index:50;background:#000c;display:flex;align-items:center;justify-content:center;padding:15px}.support-card{width:min(100%,480px);max-height:90vh;overflow:auto;background:#1a0d12;border:1px solid #57303d;padding:24px}.support-card h2{margin:10px 0 6px;text-transform:uppercase}.support-card p{color:#d8c5c5;line-height:1.7;font-size:13px}.support-contact{display:block;padding:14px;margin:10px 0;background:#10080b;border:1px solid #382027;text-decoration:none;overflow-wrap:anywhere}.support-hours{font-size:13px;line-height:1.8;color:#d8c5c5}.support-close{width:100%;padding:14px;background:var(--red);color:white;margin-top:12px}
 .cart-box{position:fixed;inset:0;background:#000b;z-index:10;display:flex;justify-content:flex-end}
 .cart-content{background:#1a0d12;width:min(100%,430px);height:100%;overflow:auto;padding:24px}
 .cart-row,.order-row{border-bottom:1px solid var(--line);padding:14px 0;line-height:1.6}
@@ -114,7 +114,7 @@ input,select,textarea{width:100%;padding:14px;background:#10080b;border:1px soli
 .pix-panel a{display:inline-block;margin-top:12px;color:#ff9eae}
 .cart-row button{background:transparent;color:#ff9eae;margin-left:8px}
 footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-size:10px;letter-spacing:2px;display:flex;justify-content:space-between}
-@media(max-width:650px){header{padding:17px 5%}.nav{display:none}.hero{padding:58px 6%}h1{letter-spacing:-3px}.categories,.products{grid-template-columns:1fr 1fr}.category{min-height:120px;font-size:16px}.product-art{height:170px}.section{padding:42px 5%}.section-head{gap:15px;align-items:start;flex-direction:column}.panel-grid{grid-template-columns:1fr}footer{gap:12px;flex-direction:column}}
+@media(max-width:650px){header{padding:14px 4%;gap:10px}.logo{font-size:20px}.nav{display:none}.header-actions{gap:6px}.cart{padding:10px;font-size:10px}.menu-toggle{padding:9px 11px}.site-menu{right:4%;top:70px}.hero{padding:58px 6%}h1{letter-spacing:-3px}.categories,.products{grid-template-columns:1fr 1fr}.category{min-height:120px;font-size:16px}.product-art{height:170px}.section{padding:42px 5%}.section-head{gap:15px;align-items:start;flex-direction:column}.panel-grid{grid-template-columns:1fr}footer{gap:12px;flex-direction:column}}
 
 .admin-quickbar{position:fixed;top:88px;right:14px;z-index:15}
 .admin-quickbar button{background:var(--red);color:#fff;padding:13px 16px;box-shadow:0 8px 28px #0008;font-size:11px;letter-spacing:1px}
@@ -163,8 +163,9 @@ body.admin-mode #adminOrderModal{z-index:60}
 <header>
 <div class="logo">KB<span>.</span> CLOSET</div>
 <nav class="nav"><a href="#categorias">Categorias</a><a href="#novidades">Novidades</a><a href="#conta">Minha conta</a></nav>
-<button class="account-btn" onclick="goToAccount()">MINHA CONTA ↗</button>
+<div class="header-actions"><button class="cart" type="button" onclick="openCart()">🛍️ SACOLA (<span id="cartCount">0</span>)</button><button class="menu-toggle" type="button" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" onclick="toggleSiteMenu()">⋮</button></div>
 </header>
+<div id="siteMenu" class="site-menu hidden" aria-label="Menu da loja"><a href="#categorias" onclick="closeSiteMenu()">CATEGORIAS ↗</a><a href="#novidades" onclick="closeSiteMenu()">NOVIDADES ↗</a><button type="button" onclick="goToAccountFromMenu()">MINHA CONTA ↗</button><button type="button" onclick="goToOrdersFromMenu()">MEUS PEDIDOS ↗</button><button type="button" onclick="openCart();closeSiteMenu()">MINHA SACOLA ↗</button><button type="button" onclick="openSupport()">CENTRAL DE ATENDIMENTO ↗</button></div>
 
 <div id="adminQuickbar" class="admin-quickbar hidden"><button type="button" onclick="openAdminWorkspace()">ADMINISTRAR LOJA ↗</button></div>
 
@@ -318,7 +319,7 @@ body.admin-mode #adminOrderModal{z-index:60}
  </div>
 </div>
 <div id="productDetail" class="product-detail hidden" role="dialog" aria-modal="true" aria-label="Detalhes do produto"><button class="detail-back" onclick="closeProductDetail()">← VOLTAR À LOJA</button><div id="productDetailContent"></div></div>
-<button class="cart" onclick="openCart()">SACOLA (<span id="cartCount">0</span>)</button>
+
 <div id="cartLayer" class="cart-box hidden">
 <div class="cart-content">
 <button class="secondary" onclick="closeCart()">← CONTINUAR COMPRANDO</button>
@@ -364,7 +365,8 @@ body.admin-mode #adminOrderModal{z-index:60}
 </div>
 </div>
 
-<footer><span>KB. CLOSET</span><span>TOO HOT TO BE BASIC. © 2026</span></footer>
+<div id="supportModal" class="support-modal hidden" role="dialog" aria-modal="true" aria-labelledby="supportTitle"><div class="support-card"><button type="button" class="secondary" onclick="closeSupport()">← VOLTAR À LOJA</button><div class="eyebrow">KB CLOSET 🍒</div><h2 id="supportTitle">Central de atendimento</h2><p>Precisa de ajuda com seu pedido ou quer falar com a gente? Entre em contato pelos canais oficiais da KB Closet.</p><a class="support-contact" href="mailto:kbcloset061@gmail.com"><strong>E-mail</strong><br>kbcloset061@gmail.com</a><a class="support-contact" href="https://wa.me/5561981021622" target="_blank" rel="noopener"><strong>WhatsApp / Telefone</strong><br>(61) 98102-1622<br><small>Toque para conversar pelo WhatsApp</small></a><div class="support-hours"><strong>Horários de atendimento</strong><br>Segunda a sexta: 09h às 18h<br>Sábados, domingos e feriados: 09h às 20h</div><button type="button" class="support-close" onclick="closeSupport()">FECHAR</button></div></div>
+<footer><span>KB. CLOSET 🍒</span><span>TOO HOT TO BE BASIC. © 2026</span></footer>
 
 <script>
 const SUPABASE_URL='https://tbygkbxvpnjcjsvqueuv.supabase.co';
@@ -384,7 +386,13 @@ const rates={
 
 function paymentName(method){return ({pix:'Pix pelo site (Mercado Pago)',card_delivery:'Cartão na entrega (Ton)',card_link:'Cartão por link (Ton)'})[method]||'A combinar'}
 const money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-function goToAccount(){document.querySelector('#conta').scrollIntoView({behavior:'smooth'})}
+function goToAccount(){closeSiteMenu();document.querySelector("#conta").scrollIntoView({behavior:"smooth"})}
+function toggleSiteMenu(){const menu=document.getElementById("siteMenu"),button=document.getElementById("menuToggle"),opening=menu.classList.contains("hidden");menu.classList.toggle("hidden",!opening);button.setAttribute("aria-expanded",String(opening));button.setAttribute("aria-label",opening?"Fechar menu":"Abrir menu")}
+function closeSiteMenu(){document.getElementById("siteMenu").classList.add("hidden");document.getElementById("menuToggle").setAttribute("aria-expanded","false");document.getElementById("menuToggle").setAttribute("aria-label","Abrir menu")}
+function goToAccountFromMenu(){closeSiteMenu();goToAccount()}
+async function goToOrdersFromMenu(){closeSiteMenu();goToAccount();const {data:{user}}=await supabaseClient.auth.getUser();if(user){await loadMyOrders();document.getElementById("ordersPanel").scrollIntoView({behavior:"smooth",block:"start"})}else{setMode("login");document.getElementById("message").textContent="Entre na sua conta para consultar seus pedidos."}}
+function openSupport(){closeSiteMenu();document.getElementById("supportModal").classList.remove("hidden");document.body.style.overflow="hidden"}
+function closeSupport(){document.getElementById("supportModal").classList.add("hidden");document.body.style.overflow=""}
 function setMode(nextMode){
  mode=nextMode;let signup=mode==='signup';
  document.getElementById('signupTab').classList.toggle('active',signup);
@@ -545,7 +553,7 @@ function changeProductPhoto(id,delta){
 }
 function safe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function filterCategory(category){document.getElementById('productHeading').textContent=category.toUpperCase();loadProducts(category);document.getElementById('novidades').scrollIntoView({behavior:'smooth'})}
-function saveCart(){localStorage.setItem('kb_cart',JSON.stringify(cart));document.getElementById('cartCount').textContent=cart.reduce((n,i)=>n+i.quantity,0)}
+function saveCart(){localStorage.setItem("kb_cart",JSON.stringify(cart));document.getElementById("cartCount").textContent=cart.reduce((n,i)=>n+i.quantity,0)}
 function addToCart(id){
  let p=products.find(x=>String(x.id)===String(id));if(!p)return;
  const vars=productVariants[p.id]||[],color=document.getElementById('color-'+id)?.value||'Única',size=document.getElementById('size-'+id)?.value||'Tamanho único',variant=vars.find(v=>v.color===color&&v.size===size);
