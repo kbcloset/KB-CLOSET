@@ -157,6 +157,41 @@ body.admin-mode #adminPanel.hidden{display:block!important}
 body.admin-mode #adminOrderModal{z-index:60}
 @media(max-width:700px){.admin-topbar{align-items:flex-start;flex-direction:column}.admin-return{width:100%}.admin-stats{grid-template-columns:1fr 1fr}.admin-stat:last-child{grid-column:1/-1}.admin-product-list{grid-template-columns:1fr}.admin-product-card{grid-template-columns:78px minmax(0,1fr)}.admin-product-thumb{width:78px;height:105px}.admin-form,.admin-inventory{padding:15px}.admin-form-actions{grid-template-columns:1fr}.admin-section-tabs{flex-direction:column}.admin-product-filters{flex-wrap:wrap}.admin-product-filter{min-width:28%}}
 
+
+/* Paleta restaurada: preto predominante + vinho em gradientes suaves */
+body{
+  background:
+    radial-gradient(ellipse at 12% 28%,rgba(76,16,32,.24),transparent 42%),
+    radial-gradient(ellipse at 88% 72%,rgba(53,16,27,.22),transparent 40%),
+    linear-gradient(120deg,#13090c 0%,#10080b 58%,#180b10 100%);
+}
+.topline{
+  background:linear-gradient(90deg,#13090c 0%,#35101b 24%,#501321 50%,#35101b 76%,#13090c 100%);
+}
+.account-section{
+  background:
+    radial-gradient(ellipse at 50% 0%,#2c1820 0%,transparent 58%),
+    linear-gradient(145deg,#1b0c12,#13090c);
+}
+.product{
+  background:linear-gradient(160deg,#1a0d12 0%,#13090c 100%);
+}
+.product-detail{
+  background:
+    radial-gradient(ellipse at 80% 10%,rgba(76,16,32,.22),transparent 45%),
+    linear-gradient(120deg,#13090c,#10080b);
+}
+.cart-content{
+  background:
+    radial-gradient(ellipse at 100% 0%,rgba(53,16,27,.25),transparent 45%),
+    linear-gradient(145deg,#1a0d12,#13090c);
+}
+.support-card{
+  background:
+    radial-gradient(ellipse at 100% 0%,rgba(76,16,32,.18),transparent 50%),
+    linear-gradient(145deg,#1a0d12,#13090c);
+}
+
 </style>
 </head>
 <body>
