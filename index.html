@@ -245,9 +245,13 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 #checkoutMessage,.message,#pixOrderStatus,.pix-panel p{overflow-wrap:anywhere;word-break:break-word}
 .pix-panel textarea,.pix-panel button,.pix-panel a{width:100%;max-width:100%;min-width:0;box-sizing:border-box;white-space:normal;overflow-wrap:anywhere}
 .pix-panel img{max-width:100%;height:auto}
+
+/* Bloqueio de manutenção controlado pela administradora */
+.store-closed-overlay{position:fixed;inset:0;z-index:200000;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at 80% 15%,#4c1020,transparent 48%),#13090c;text-align:center}.store-closed-overlay.hidden{display:none!important}.store-closed-card{width:min(100%,520px);padding:34px 25px;border:1px solid #57303d;background:#1a0d12;box-shadow:0 25px 80px #0008}.store-closed-card .logo{font-size:26px}.store-closed-card h1{font-size:clamp(32px,8vw,58px);letter-spacing:-2px;line-height:1;margin:24px 0 14px}.store-closed-card p{color:#d8c5c5;line-height:1.8;font-size:14px}.store-closed-card small{display:block;margin-top:24px;color:#ff9eae;letter-spacing:1px}.order-pix{margin-top:14px;text-align:left}.order-pix h4{margin:0 0 8px;text-align:center}
 </style>
 </head>
 <body>
+<div id="storeClosedOverlay" class="store-closed-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="storeClosedTitle"><div class="store-closed-card"><div class="logo">KB<span style="color:var(--red)">.</span> CLOSET 🍒</div><h1 id="storeClosedTitle">UM INSTANTINHO,<br>IT GIRLS.</h1><p id="storeClosedMessage">Estamos fazendo alguns ajustes na loja. Voltamos já! ❤️‍🔥</p><small>KB CLOSET • TOO HOT TO BE BASIC</small></div></div>
 <div class="topline" aria-label="Too hot to be basic. Seu próximo look favorito. KB Closet"><div class="topline-track"><div class="topline-copy"><span>TOO HOT TO BE BASIC 🍒</span><span class="marquee-separator">✦</span><span>SEU PRÓXIMO LOOK FAVORITO</span><span class="marquee-separator">✦</span><span>KB CLOSET</span><span class="marquee-separator">✦</span></div><div class="topline-copy" aria-hidden="true"><span>TOO HOT TO BE BASIC 🍒</span><span class="marquee-separator">✦</span><span>SEU PRÓXIMO LOOK FAVORITO</span><span class="marquee-separator">✦</span><span>KB CLOSET</span><span class="marquee-separator">✦</span></div></div>
 <header>
 <button class="menu-toggle" type="button" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" onclick="toggleSiteMenu()"><span></span><span></span><span></span></button>
@@ -256,7 +260,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <div class="header-actions"><button class="cart" type="button" onclick="openCart()">🛍️ SACOLA (<span id="cartCount">0</span>)</button></div>
 </header>
 <button id="menuBackdrop" class="menu-backdrop" type="button" aria-label="Fechar menu" onclick="closeSiteMenu()"></button>
-<aside id="siteMenu" class="site-menu" aria-label="Menu lateral KB Closet" aria-hidden="true"><div class="menu-drawer-head"><button type="button" class="menu-drawer-close" aria-label="Fechar menu" onclick="closeSiteMenu()">×</button><div class="menu-brand">KB<span>.</span> CLOSET 🍒</div><p>Too hot to be basic.<br>Seu closet, suas escolhas.</p></div><div class="menu-drawer-links"><div class="menu-drawer-label">Explore a KB</div><a href="#categorias" onclick="closeSiteMenu()">Categorias <span>↗</span></a><a href="#novidades" onclick="closeSiteMenu()">Novidades <span>↗</span></a><a href="#novidades" onclick="filterCategory('New Drop');closeSiteMenu()" class="menu-link-accent">New drop <span>✦</span></a><div class="menu-drawer-label">Sua conta</div><button type="button" onclick="goToAccountFromMenu()">Minha conta <span>↗</span></button><button type="button" onclick="goToOrdersFromMenu()">Meus pedidos <span>↗</span></button><button type="button" onclick="openCart();closeSiteMenu()">Minha sacola <span>↗</span></button><div class="menu-drawer-label">Precisa de ajuda?</div><button type="button" onclick="openSupport()" class="menu-link-accent">Central de atendimento <span>♡</span></button></div><div class="menu-drawer-footer"><strong>KB CLOSET 🍒</strong>Peças marcantes. Atitude lá em cima.</div></aside>
+<aside id="siteMenu" class="site-menu" aria-label="Menu lateral KB Closet" aria-hidden="true"><div class="menu-drawer-head"><button type="button" class="menu-drawer-close" aria-label="Fechar menu" onclick="closeSiteMenu()">×</button><div class="menu-brand">KB<span>.</span> CLOSET 🍒</div><p>Too hot to be basic.<br>Seu closet, suas escolhas.</p></div><div class="menu-drawer-links"><div class="menu-drawer-label">Sua conta</div><button type="button" class="menu-link-accent" onclick="goToOrdersFromMenu()">Meus pedidos <span>↗</span></button><button type="button" onclick="goToAccountFromMenu()">Minha conta <span>↗</span></button><button type="button" onclick="openCart();closeSiteMenu()">Minha sacola <span>↗</span></button><div class="menu-drawer-label">Explore a KB</div><a href="#categorias" onclick="closeSiteMenu()">Categorias <span>↗</span></a><a href="#novidades" onclick="closeSiteMenu()">Novidades <span>↗</span></a><a href="#novidades" onclick="filterCategory('New Drop');closeSiteMenu()" class="menu-link-accent">New drop <span>✦</span></a><div class="menu-drawer-label">Precisa de ajuda?</div><button type="button" onclick="openSupport()" class="menu-link-accent">Central de atendimento <span>♡</span></button></div><div class="menu-drawer-footer"><strong>KB CLOSET 🍒</strong>Peças marcantes. Atitude lá em cima.</div></aside>
 
 <div id="adminQuickbar" class="admin-quickbar hidden"><button type="button" onclick="openAdminWorkspace()">ADMINISTRAR LOJA ↗</button></div>
 
@@ -351,6 +355,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <div><div class="eyebrow">KB CLOSET • BACKSTAGE</div><h2>PAINEL DE ADMINISTRAÇÃO</h2><p>Seu closet, seu estoque, suas regras.</p></div>
 <button type="button" class="admin-return" onclick="closeAdminWorkspace()">← VOLTAR À LOJA</button>
 </div>
+<div class="admin-inventory" id="storeAccessControl"><div class="admin-inventory-heading"><div><h3>ACESSO À LOJA</h3><p>Bloqueie a vitrine durante ajustes. Seu acesso de administradora continua funcionando.</p></div></div><button type="button" class="submit" id="storeLockButton" onclick="toggleStoreLock()">BLOQUEAR LOJA</button><p id="storeLockStatus" class="message" role="status"></p></div>
 <div id="adminStats" class="admin-stats"></div>
 <div class="admin-section-tabs">
 <button type="button" id="adminProductsTab" class="admin-section-tab active" onclick="showAdminSection('products')">PRODUTOS & ESTOQUE</button>
@@ -464,6 +469,7 @@ const SUPABASE_URL='https://tbygkbxvpnjcjsvqueuv.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_RjqWz228EvN295E0zof1gA_J6Ju6FYi';
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let mode='signup',products=[],cart=JSON.parse(localStorage.getItem('kb_cart')||'[]');let productPhotoIndex={};let productVariants={};
+let isStoreAdmin=false,storeMaintenanceEnabled=false;
 
 const rates={
  'Samambaia Sul':5,
@@ -557,7 +563,8 @@ document.getElementById('recoveryForm').addEventListener('submit', async e => {
  document.getElementById('loggedPanel').classList.toggle('hidden',!logged);
  document.getElementById('loggedEmail').textContent=logged?session.user.email:'';
  if(logged){await checkAdmin();fillBuyerData(session.user)}
- else{document.getElementById('adminQuickbar').classList.add('hidden');document.getElementById('adminPanel').classList.add('hidden');document.body.classList.remove('admin-mode')}
+ else{isStoreAdmin=false;document.getElementById('adminQuickbar').classList.add('hidden');document.getElementById('adminPanel').classList.add('hidden');document.body.classList.remove('admin-mode')}
+ await loadStoreSettings();
 }async function forgotPassword(){
   const email = document.getElementById('email').value.trim();
   const msg = document.getElementById('message');
@@ -585,10 +592,28 @@ function fillBuyerData(user){
  document.getElementById('buyerName').value=user.user_metadata?.full_name||'';
  document.getElementById('buyerPhone').value=user.user_metadata?.phone||'';
 }
+async function loadStoreSettings(){
+ const overlay=document.getElementById('storeClosedOverlay');
+ const {data,error}=await supabaseClient.from('store_settings').select('maintenance_enabled,maintenance_message').eq('id',true).maybeSingle();
+ if(error){if(overlay)overlay.classList.add('hidden');const status=document.getElementById('storeLockStatus');if(status&&isStoreAdmin)status.textContent='Não consegui consultar o bloqueio da loja.';return}
+ storeMaintenanceEnabled=!!data?.maintenance_enabled;
+ if(overlay){overlay.classList.toggle('hidden',!storeMaintenanceEnabled||isStoreAdmin);document.getElementById('storeClosedMessage').textContent=data?.maintenance_message||'Estamos fazendo alguns ajustes na loja. Voltamos já! ❤️‍🔥'}
+ const button=document.getElementById('storeLockButton');if(button)button.textContent=storeMaintenanceEnabled?'ABRIR LOJA PARA AS CLIENTES':'BLOQUEAR LOJA';
+ const status=document.getElementById('storeLockStatus');if(status&&isStoreAdmin)status.textContent=storeMaintenanceEnabled?'A loja está bloqueada para visitantes. Você continua com acesso administrativo.':'A loja está aberta para as clientes.';
+}
+async function toggleStoreLock(){
+ if(!isStoreAdmin){alert('Entre com a conta de administradora para alterar o acesso da loja.');return}
+ const button=document.getElementById('storeLockButton'),status=document.getElementById('storeLockStatus'),next=!storeMaintenanceEnabled;
+ button.disabled=true;status.textContent=next?'Bloqueando a loja...':'Liberando a loja...';
+ const {error}=await supabaseClient.from('store_settings').update({maintenance_enabled:next,updated_at:new Date().toISOString()}).eq('id',true);
+ button.disabled=false;if(error){status.textContent='Não consegui alterar o acesso da loja. Tente novamente.';return}
+ await loadStoreSettings();
+}
 async function checkAdmin(){
  let {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;
  let {data,error}=await supabaseClient.from('store_admins').select('user_id').eq('user_id',user.id).maybeSingle();
  const isAdmin=!!data&&!error;
+ isStoreAdmin=isAdmin;
  document.getElementById('adminQuickbar').classList.toggle('hidden',!isAdmin);
  document.getElementById('adminPanel').classList.add('hidden');
  if(!isAdmin){document.body.classList.remove('admin-mode');return}
@@ -602,7 +627,7 @@ async function loadProducts(category=''){
  products=data||[];
  if(!products.length){grid.innerHTML='<p>Em breve, novidades por aqui. ❤️‍🔥</p>';return}
  const {data:variants}=await supabaseClient.from('product_variants').select('id,product_id,color,size,stock').in('product_id',products.map(p=>p.id));
- adminProductVariants={};(variants||[]).forEach(v=>(adminProductVariants[v.product_id]||(adminProductVariants[v.product_id]=[])).push(v));
+ adminProductVariants={};productVariants={};(variants||[]).forEach(v=>{(adminProductVariants[v.product_id]||(adminProductVariants[v.product_id]=[])).push(v);(productVariants[v.product_id]||(productVariants[v.product_id]=[])).push(v)});
  grid.innerHTML=products.map(renderProductCard).join('');products.forEach(p=>{if((productVariants[p.id]||[]).length)updateVariantOptions(p.id)});
 }
 function renderProductCard(p){
@@ -714,7 +739,15 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
  if(payment==='card_delivery'&&zone==='Outro'){msg.textContent='Para essa região, cartão somente por link da Ton.';return}
  let payload={p_customer_name:document.getElementById('buyerName').value.trim(),p_phone:document.getElementById('buyerPhone').value.trim(),p_address:document.getElementById('buyerAddress').value.trim(),p_delivery_zone:zone,p_items:cart.map(i=>({product_id:i.id,variant_id:i.variant_id,color:i.color,size:i.size,quantity:i.quantity}))};
  let {data,error}=await supabaseClient.rpc('create_store_order',payload);
- if(error){msg.textContent='Não foi possível registrar: '+error.message;return}
+ if(error){
+   const detail=String(error.message||'');
+   if(/estoque insuficiente|não está mais disponível|não está disponível|cor ou o tamanho escolhido/i.test(detail)){
+    msg.textContent='Uma peça acabou enquanto você finalizava. Atualize a sacola e escolha outra quantidade, cor ou tamanho.';
+   }else if(/temporariamente fechada/i.test(detail)){
+    msg.textContent='A loja está temporariamente fechada para manutenção. Tente novamente mais tarde.';
+   }else msg.textContent='Não foi possível registrar: '+detail;
+   return;
+  }
  let {error:paymentError}=await supabaseClient.rpc('set_order_payment_method',{p_order_id:data,p_payment_method:payment});
  if(paymentError){msg.textContent='Pedido #'+data+' foi criado, mas não conseguimos salvar a forma de pagamento. Não envie outro pedido; fale com a KB Closet.';return}
  cart=[];saveCart();renderCart();
@@ -736,12 +769,24 @@ function renderOrderTracking(status){
  const note=current===4?'Seu pedido foi concluído. Obrigada por comprar na KB Closet!':current===3?'Seu pedido saiu para entrega. Fique de olho!':current===2?'Estamos preparando seu pedido com carinho.':current===1?'Seu pedido foi confirmado e seguirá para preparação.':'Recebemos seu pedido. Assim que ele for confirmado, a próxima etapa aparecerá aqui';
  return `<div class="order-tracking"><div class="tracking-heading"><span>ACOMPANHAMENTO DO PEDIDO</span><strong>${safe(label)}</strong></div><ol class="tracking-steps">${steps.map((step,i)=>`<li class="${i<current?'done':i===current?'current':'pending'}"><span class="tracking-dot"></span><span>${safe(step)}</span></li>`).join('')}</ol><p class="tracking-note">${note}</p></div>`;
 }
+function renderSavedOrderPix(o){
+ if(o.payment_method!=='pix'||!o.pix_qr_code||/pago confirmado|pagamento recusado|pagamento cancelado|pagamento estornado/i.test(o.payment_status||'')||o.status==='Cancelado')return '';
+ const qr=o.pix_qr_code_base64?'<img src="data:image/png;base64,'+safe(o.pix_qr_code_base64)+'" alt="QR Code Pix do pedido">':'';
+ const ticket=o.pix_ticket_url&&/^https:\/\//i.test(o.pix_ticket_url)?'<a href="'+safe(o.pix_ticket_url)+'" target="_blank" rel="noopener">ABRIR PAGAMENTO NO MERCADO PAGO ↗</a>':'';
+ return '<div class="pix-panel order-pix"><h4>PIX DO PEDIDO</h4><p>Escaneie o QR Code ou copie o código abaixo para pagar.</p>'+qr+'<textarea class="pix-code" readonly aria-label="Código Pix do pedido">'+safe(o.pix_qr_code)+'</textarea><button type="button" class="copy-pix" onclick="copyOrderPix(this)">COPIAR CÓDIGO PIX</button><p class="order-pix-copy-status" role="status"></p>'+ticket+'</div>';
+}
+async function copyOrderPix(button){
+ const panel=button.closest('.order-pix'),code=panel.querySelector('textarea').value,status=panel.querySelector('.order-pix-copy-status');
+ try{await navigator.clipboard.writeText(code);status.textContent='Código Pix copiado! Abra o app do banco para pagar.'}
+ catch{const area=panel.querySelector('textarea');area.focus();area.select();status.textContent='Selecione e copie o código Pix manualmente.'}
+}
 async function loadMyOrders(){
  document.getElementById('ordersPanel').classList.remove('hidden');let list=document.getElementById('ordersList');list.textContent='Carregando...';
  let {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;
- let {data,error}=await supabaseClient.from('orders').select('id,created_at,status,total,delivery_fee,payment_method,payment_status,mercadopago_payment_id').eq('user_id',user.id).order('created_at',{ascending:false});
+ let {data,error}=await supabaseClient.from('orders').select('id,created_at,status,total,delivery_fee,payment_method,payment_status,mercadopago_payment_id,pix_qr_code,pix_qr_code_base64,pix_ticket_url').eq('user_id',user.id).order('created_at',{ascending:false});
  if(error){list.textContent='Não foi possível carregar seus pedidos.';return}
- list.innerHTML=data.length?data.map(o=>`<div class="order-row"><strong>Pedido #${safe(o.id)}</strong><br>${new Date(o.created_at).toLocaleDateString('pt-BR')}<br>${renderOrderTracking(o.status||'Pedido recebido')}<br>Total: ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>Status do pagamento: ${safe(o.payment_status||'Aguardando confirmação')}${o.payment_method==='pix'&&!o.mercadopago_payment_id&&!/pago/i.test(o.payment_status||'')?`<br><button type="button" class="copy-pix" onclick="retryExistingPix('${o.id}')">GERAR PIX DESTE PEDIDO</button>`:''}${['Pedido recebido','Pedido confirmado'].includes(o.status)?`<br><button type="button" class="secondary" onclick="cancelMyOrder('${o.id}')">CANCELAR MEU PEDIDO</button>`:''}</div>`).join(''):'Você ainda não tem pedidos';
+ const orders=data||[];
+ list.innerHTML=orders.length?orders.map(o=>`<div class="order-row"><strong>Pedido #${safe(o.id)}</strong><br>${new Date(o.created_at).toLocaleDateString('pt-BR')}<br>${renderOrderTracking(o.status||'Pedido recebido')}<br>Total: ${money(o.total)}<br>Pagamento: ${safe(paymentName(o.payment_method))}<br>Status do pagamento: ${safe(o.payment_status||'Aguardando confirmação')}${renderSavedOrderPix(o)}${o.payment_method==='pix'&&!o.mercadopago_payment_id&&!/pago/i.test(o.payment_status||'')?`<br><button type="button" class="copy-pix" onclick="retryExistingPix('${o.id}')">GERAR PIX DESTE PEDIDO</button>`:''}${['Pedido recebido','Pedido confirmado'].includes(o.status)?`<br><button type="button" class="secondary" onclick="cancelMyOrder('${o.id}')">CANCELAR MEU PEDIDO</button>`:''}</div>`).join(''):'Você ainda não tem pedidos';
 }
 async function cancelMyOrder(orderId){
  if(!confirm('Tem certeza que deseja cancelar este pedido?'))return;
@@ -752,7 +797,7 @@ async function cancelMyOrder(orderId){
 }
 async function retryExistingPix(orderId){
  const result=await generatePixForOrder(orderId);
- if(result)document.getElementById('checkoutMessage').textContent='Pix gerado para o pedido #'+orderId+'. Faça o pagamento pelo QR Code ou código copia e cola.';
+ if(result){document.getElementById('checkoutMessage').textContent='Pix gerado para o pedido #'+orderId+'. Faça o pagamento pelo QR Code ou código copia e cola.';await loadMyOrders()}
 }
 function parseList(id){return [...new Set(document.getElementById(id).value.split(',').map(x=>x.trim()).filter(Boolean))]}
 let editingProductId=null,adminProducts=[],adminProductVariants={},adminProductsTab='active',adminOrdersCache=[];
