@@ -150,7 +150,7 @@ footer{padding:30px 6%;border-top:1px solid var(--line);color:var(--muted);font-
 .admin-product-actions .remove-product{background:#8f1730;color:#fff;border:1px solid #b22b49}
 .admin-product-actions .restore-product{background:#254c3b;color:#fff;border:1px solid #3b775b}
 body.admin-mode{overflow:hidden}
-body.admin-mode .topline,body.admin-mode header,body.admin-mode main>.hero,body.admin-mode main>#categorias,body.admin-mode main>#novidades,body.admin-mode .account-wrap,body.admin-mode #ordersPanel,body.admin-mode footer,body.admin-mode .cart,body.admin-mode #adminQuickbar,body.admin-mode #productDetail{display:none!important}
+body.admin-mode .topline,body.admin-mode header,body.admin-mode main>.hero,body.admin-mode main>#categorias,body.admin-mode main>#novidades,body.admin-mode #ordersPanel,body.admin-mode footer,body.admin-mode .cart,body.admin-mode #adminQuickbar,body.admin-mode #productDetail,body.admin-mode #authPanel,body.admin-mode #loggedPanel,body.admin-mode #accountTitle,body.admin-mode #accountIntro{display:none!important}
 body.admin-mode #conta{display:block!important;position:fixed;inset:0;z-index:40;overflow:auto;padding:24px 5%;background:var(--deep);border:0}
 body.admin-mode #adminPanel{display:block!important;max-width:1200px;margin:0 auto;padding:0;border:0;background:transparent}
 body.admin-mode #adminPanel.hidden{display:block!important}
@@ -232,6 +232,10 @@ body.admin-mode{background:#13090c!important;color:#fff4ec!important;min-height:
 body.admin-mode main{display:block!important;min-height:100vh;background:#13090c!important}
 body.admin-mode #conta{display:block!important;min-height:100vh;background:#13090c!important;color:#fff4ec!important}
 body.admin-mode #adminPanel,body.admin-mode #adminPanel:not(.hidden){display:block!important;visibility:visible!important;opacity:1!important;min-height:100vh;color:#fff4ec!important}
+
+/* O painel fica dentro de .account-wrap; não ocultar o contêiner no modo admin */
+body.admin-mode .account-wrap{display:block!important;visibility:visible!important;opacity:1!important}
+body.admin-mode #adminPanel{position:relative!important;inset:auto!important}
 </style>
 </head>
 <body>
