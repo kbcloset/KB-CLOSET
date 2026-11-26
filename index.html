@@ -281,6 +281,19 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 
 /* Texto do cálculo de entrega: manter a mensagem inteira visível no celular */
 #deliveryInfo{display:block!important;width:100%;min-width:0;max-width:100%;height:auto!important;min-height:0;max-height:none!important;overflow:visible!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.6;padding:10px 0;margin:10px 0;color:#f2dddd;box-sizing:border-box}
+
+/* Ajuste de leitura: menu e textos do topo sem cortes */
+.site-menu{height:100dvh;height:100vh;min-height:100%;padding-top:env(safe-area-inset-top);padding-bottom:calc(28px + env(safe-area-inset-bottom));overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+.menu-drawer-head,.menu-drawer-links,.menu-drawer-footer{height:auto;max-height:none;min-height:0;overflow:visible;box-sizing:border-box}
+.menu-drawer-head{padding:calc(28px + env(safe-area-inset-top)) 24px 24px}
+.menu-drawer-head p{display:block;height:auto;max-height:none;overflow:visible;white-space:normal;overflow-wrap:anywhere;line-height:1.75;margin:10px 0 0}
+.menu-drawer-footer{display:block;line-height:1.75;white-space:normal;overflow-wrap:anywhere;word-break:normal;padding:18px;margin:8px 24px 0}
+.menu-drawer-footer strong{line-height:1.5;margin-bottom:8px}
+.menu-footer-tagline{display:block;line-height:1.75;overflow:visible;white-space:normal;overflow-wrap:anywhere}
+.hero{padding-top:clamp(58px,9vw,82px);padding-bottom:clamp(58px,9vw,82px);overflow:visible}
+.hero h1{line-height:.98;padding:0 0 .08em;margin:22px 0 26px;overflow:visible;overflow-wrap:normal}
+.hero p{display:block;height:auto;max-height:none;overflow:visible;white-space:normal;overflow-wrap:anywhere;word-break:normal;line-height:1.9;margin:18px 0 0;padding:2px 0;font-size:clamp(14px,3.8vw,16px)}
+@media(max-width:650px){.menu-drawer-head{padding:calc(26px + env(safe-area-inset-top)) 20px 22px}.menu-drawer-links{padding:14px 14px}.site-menu a,.site-menu button{min-height:50px;padding:15px 12px;line-height:1.5;white-space:normal;overflow-wrap:anywhere}.menu-drawer-footer{margin:8px 18px 0;padding:16px}.hero{padding:52px 6% 64px} .hero h1{line-height:1.02;letter-spacing:-2.5px;margin:24px 0 28px}.hero p{line-height:1.9;font-size:15px}}
 </style>
 </head>
 <body>
@@ -294,7 +307,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <div class="header-actions"><button class="cart" type="button" onclick="openCart()">🛍️ SACOLA (<span id="cartCount">0</span>)</button></div>
 </header>
 <button id="menuBackdrop" class="menu-backdrop" type="button" aria-label="Fechar menu" onclick="closeSiteMenu()"></button>
-<aside id="siteMenu" class="site-menu" aria-label="Menu lateral KB Closet" aria-hidden="true"><div class="menu-drawer-head"><button type="button" class="menu-drawer-close" aria-label="Fechar menu" onclick="closeSiteMenu()">×</button><div class="menu-brand">KB<span>.</span> CLOSET 🍒</div><p>Too hot to be basic.<br>Seu closet, suas escolhas.</p></div><div class="menu-drawer-links"><div class="menu-drawer-label">Sua conta</div><button type="button" class="menu-link-accent" onclick="goToOrdersFromMenu()">Meus pedidos <span>↗</span></button><button type="button" onclick="goToAccountFromMenu()">Minha conta <span>↗</span></button><button type="button" onclick="openCart();closeSiteMenu()">Minha sacola <span>↗</span></button><div class="menu-drawer-label">Explore a KB</div><a href="#categorias" onclick="closeSiteMenu()">Categorias <span>↗</span></a><a href="#novidades" onclick="closeSiteMenu()">Novidades <span>↗</span></a><a href="#novidades" onclick="filterCategory('New Drop');closeSiteMenu()" class="menu-link-accent">New drop <span>✦</span></a><div class="menu-drawer-label">Precisa de ajuda?</div><button type="button" onclick="openSupport()" class="menu-link-accent">Central de atendimento <span>♡</span></button></div><div class="menu-drawer-footer"><strong>KB CLOSET 🍒</strong>Peças marcantes. Atitude lá em cima.</div></aside>
+<aside id="siteMenu" class="site-menu" aria-label="Menu lateral KB Closet" aria-hidden="true"><div class="menu-drawer-head"><button type="button" class="menu-drawer-close" aria-label="Fechar menu" onclick="closeSiteMenu()">×</button><div class="menu-brand">KB<span>.</span> CLOSET 🍒</div><p>Too hot to be basic.<br>Seu closet, suas escolhas.</p></div><div class="menu-drawer-links"><div class="menu-drawer-label">Sua conta</div><button type="button" class="menu-link-accent" onclick="goToOrdersFromMenu()">Meus pedidos <span>↗</span></button><button type="button" onclick="goToAccountFromMenu()">Minha conta <span>↗</span></button><button type="button" onclick="openCart();closeSiteMenu()">Minha sacola <span>↗</span></button><div class="menu-drawer-label">Explore a KB</div><a href="#categorias" onclick="closeSiteMenu()">Categorias <span>↗</span></a><a href="#novidades" onclick="closeSiteMenu()">Novidades <span>↗</span></a><a href="#novidades" onclick="filterCategory('New Drop');closeSiteMenu()" class="menu-link-accent">New drop <span>✦</span></a><div class="menu-drawer-label">Precisa de ajuda?</div><button type="button" onclick="openSupport()" class="menu-link-accent">Central de atendimento <span>♡</span></button></div><div class="menu-drawer-footer"><strong>KB CLOSET 🍒</strong><span class="menu-footer-tagline">Peças marcantes. Atitude lá em cima.</span></div></aside>
 
 <div id="adminQuickbar" class="admin-quickbar hidden"><button type="button" onclick="openAdminWorkspace()">ADMINISTRAR LOJA ↗</button></div>
 
