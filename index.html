@@ -104,6 +104,7 @@ input,select,textarea{width:100%;padding:14px;background:#10080b;border:1px soli
 .order-modal-card{background:#1a0d12;border:1px solid var(--line);width:min(100%,650px);max-height:92vh;overflow:auto;padding:22px}
 .order-modal-card h2{margin-top:0}
 .order-detail-line{border-bottom:1px solid var(--line);padding:10px 0;line-height:1.6}
+.order-soldout{display:inline-block;margin:4px 0 0;padding:4px 8px;border-radius:5px;background:#b31332;color:#fff;font-size:10px;font-weight:900;letter-spacing:1px;vertical-align:middle}.order-stock-unknown{display:inline-block;margin:4px 0 0;color:#ffcf8a;font-size:10px;font-weight:700}
 .order-detail-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
 .order-detail-actions button{padding:13px}
 @media(max-width:600px){.order-modal-card{padding:16px}.order-detail-actions{grid-template-columns:1fr}}
@@ -1060,14 +1061,23 @@ async function openAdminOrder(orderId){
  modal.classList.remove('hidden');detail.textContent='Carregando detalhes...';msg.textContent='';
  const [{data:o,error},{data:items,error:itemError}]=await Promise.all([
   supabaseClient.from('orders').select('id,created_at,customer_name,customer_email,customer_phone,phone,delivery_address,address,delivery_zone,subtotal,delivery_fee,total,status,payment_method,payment_status,confirmation_email_sent_at').eq('id',orderId).maybeSingle(),
-  supabaseClient.from('order_items').select('product_name,color,size,quantity,unit_price').eq('order_id',orderId)
+  supabaseClient.from('order_items').select('product_id,product_name,color,size,quantity,unit_price').eq('order_id',orderId)
  ]);
  if(error||!o){detail.textContent='Não foi possível abrir este pedido. Confira se sua conta tem acesso de administradora.';return}
  document.getElementById('adminOrderTitle').textContent='Pedido #'+o.id;
  document.getElementById('adminOrderStatus').value=o.status||'Pedido recebido';
  const emailBtn=document.getElementById('sendOrderEmailButton');
  emailBtn.textContent=o.confirmation_email_sent_at?'REENVIAR E-MAIL DE CONFIRMAÇÃO':'ENVIAR E-MAIL DE CONFIRMAÇÃO';
- detail.innerHTML=`<div class="order-detail-line"><strong>Cliente:</strong> ${safe(o.customer_name)}<br><strong>E-mail:</strong> ${safe(o.customer_email||'Não cadastrado')}<br><strong>Telefone:</strong> ${safe(o.customer_phone||o.phone||'Não cadastrado')}</div><div class="order-detail-line"><strong>Endereço:</strong> ${safe(o.delivery_address||o.address||'Não informado')}<br><strong>Região:</strong> ${safe(o.delivery_zone||'Não informada')}</div><div class="order-detail-line"><strong>Itens:</strong><br>${itemError?'Não foi possível carregar os itens.':items.map(it=>`${safe(it.product_name)} — ${safe(it.color||'Única')} / ${safe(it.size||'Tamanho único')} × ${it.quantity} — ${money(Number(it.unit_price)*Number(it.quantity))}`).join('<br>')||'Nenhum item encontrado'}</div><div class="order-detail-line">Subtotal: ${money(o.subtotal)}<br>Entrega: ${money(o.delivery_fee)}<br><strong>Total: ${money(o.total)}</strong></div><div class="order-detail-line"><strong>Pagamento:</strong> ${safe(paymentName(o.payment_method))}<br><strong>Status do pagamento:</strong> ${safe(o.payment_status||'Aguardando confirmação')}<br><strong>Data:</strong> ${new Date(o.created_at).toLocaleString('pt-BR')}<br><strong>E-mail de confirmação:</strong> ${o.confirmation_email_sent_at?'Enviado em '+new Date(o.confirmation_email_sent_at).toLocaleString('pt-BR'):'Ainda não enviado'}</div>`;
+ const productIds=[...new Set((items||[]).map(it=>it.product_id).filter(Boolean))];
+ let stockVariants=[],stockCheckError=null;
+ if(productIds.length){const result=await supabaseClient.from('product_variants').select('product_id,color,size,stock').in('product_id',productIds);stockVariants=result.data||[];stockCheckError=result.error}
+ const itemLines=itemError?'Não foi possível carregar os itens.':(items||[]).map(it=>{
+  const variant=stockVariants.find(v=>String(v.product_id)===String(it.product_id)&&String(v.color||'Única')===String(it.color||'Única')&&String(v.size||'Tamanho único')===String(it.size||'Tamanho único'));
+  const soldOut=!!variant&&Number(variant.stock)<=0;
+  const stockLabel=soldOut?' <span class="order-soldout">ESGOTADO</span>':(stockCheckError?' <span class="order-stock-unknown">Estoque não verificado</span>':'');
+  return `${safe(it.product_name)} — ${safe(it.color||'Única')} / ${safe(it.size||'Tamanho único')} × ${it.quantity} — ${money(Number(it.unit_price)*Number(it.quantity))}${stockLabel}`;
+}).join('<br>')||'Nenhum item encontrado';
+ detail.innerHTML=`<div class="order-detail-line"><strong>Cliente:</strong> ${safe(o.customer_name)}<br><strong>E-mail:</strong> ${safe(o.customer_email||'Não cadastrado')}<br><strong>Telefone:</strong> ${safe(o.customer_phone||o.phone||'Não cadastrado')}</div><div class="order-detail-line"><strong>Endereço:</strong> ${safe(o.delivery_address||o.address||'Não informado')}<br><strong>Região:</strong> ${safe(o.delivery_zone||'Não informada')}</div><div class="order-detail-line"><strong>Itens:</strong><br>${itemLines}</div><div class="order-detail-line">Subtotal: ${money(o.subtotal)}<br>Entrega: ${money(o.delivery_fee)}<br><strong>Total: ${money(o.total)}</strong></div><div class="order-detail-line"><strong>Pagamento:</strong> ${safe(paymentName(o.payment_method))}<br><strong>Status do pagamento:</strong> ${safe(o.payment_status||'Aguardando confirmação')}<br><strong>Data:</strong> ${new Date(o.created_at).toLocaleString('pt-BR')}<br><strong>E-mail de confirmação:</strong> ${o.confirmation_email_sent_at?'Enviado em '+new Date(o.confirmation_email_sent_at).toLocaleString('pt-BR'):'Ainda não enviado'}</div>`;
 }
 async function saveAdminOrderStatus(){
  if(!activeAdminOrderId)return;
