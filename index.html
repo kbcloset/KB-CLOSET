@@ -354,7 +354,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <div id="adminStats" class="admin-stats"></div>
 <div class="admin-section-tabs">
 <button type="button" id="adminProductsTab" class="admin-section-tab active" onclick="showAdminSection('products')">PRODUTOS & ESTOQUE</button>
-<button type="button" id="adminOrdersTab" class="admin-section-tab" onclick="showAdminSection('orders')">PEDIDOS</button>
+<button type="button" id="adminOrdersTab" class="admin-section-tab" onclick="showAdminSection('orders').then(()=>document.getElementById('adminOrdersSection').scrollIntoView({behavior:'smooth',block:'start'}))">PEDIDOS</button>
 </div>
 <div id="adminProductsSection">
 <form id="productForm" class="admin-form">
@@ -809,8 +809,11 @@ function closeAdminWorkspace(){
 }
 async function showAdminSection(section){
  const products=section==='products';
- document.getElementById('adminProductsSection').classList.toggle('hidden',!products);
- document.getElementById('adminOrdersSection').classList.toggle('hidden',products);
+ const productsSection=document.getElementById('adminProductsSection');
+ const ordersSection=document.getElementById('adminOrdersSection');
+ productsSection.classList.toggle('hidden',!products);
+ ordersSection.classList.toggle('hidden',products);
+ ordersSection.style.display=products?'none':'block';
  document.getElementById('adminProductsTab').classList.toggle('active',products);
  document.getElementById('adminOrdersTab').classList.toggle('active',!products);
  if(products)await loadAdminProducts();else await loadAdminOrders();
