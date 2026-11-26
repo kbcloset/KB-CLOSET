@@ -247,11 +247,11 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 .pix-panel img{max-width:100%;height:auto}
 
 /* Bloqueio de manutenção controlado pela administradora */
-.store-closed-overlay{position:fixed;inset:0;z-index:200000;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at 80% 15%,#4c1020,transparent 48%),#13090c;text-align:center}.store-closed-overlay.hidden{display:none!important}.store-closed-card{width:min(100%,520px);padding:34px 25px;border:1px solid #57303d;background:#1a0d12;box-shadow:0 25px 80px #0008}.store-closed-card .logo{font-size:26px}.store-closed-card h1{font-size:clamp(32px,8vw,58px);letter-spacing:-2px;line-height:1;margin:24px 0 14px}.store-closed-card p{color:#d8c5c5;line-height:1.8;font-size:14px}.store-closed-card small{display:block;margin-top:24px;color:#ff9eae;letter-spacing:1px}.order-pix{margin-top:14px;text-align:left}.order-pix h4{margin:0 0 8px;text-align:center}
+.store-closed-overlay{position:fixed;inset:0;z-index:200000;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(ellipse at 80% 15%,#4c1020,transparent 48%),#13090c;text-align:center}.store-closed-overlay.hidden{display:none!important}.store-closed-card{width:min(100%,520px);padding:34px 25px;border:1px solid #57303d;background:#1a0d12;box-shadow:0 25px 80px #0008}.store-closed-card .logo{font-size:26px}.store-closed-card h1{font-size:clamp(32px,8vw,58px);letter-spacing:-2px;line-height:1;margin:24px 0 14px}.store-closed-card p{color:#d8c5c5;line-height:1.8;font-size:14px}.store-closed-card .store-instagram{margin:12px 0 24px}.store-closed-card .store-instagram a{color:#ff9eae;font-weight:700;text-decoration:underline}.store-closed-card form{display:grid;gap:12px;text-align:left}.store-closed-card form label{font-size:12px;text-transform:uppercase;letter-spacing:1px}.store-closed-card form input{width:100%;padding:14px;border:1px solid #57303d;background:#10080b;color:#fff;font:inherit}.store-closed-card form button{width:100%;margin-top:4px}.store-closed-card .store-unlock-message{margin:0;text-align:center;font-size:13px}.store-closed-card small{display:block;margin-top:24px;color:#ff9eae;letter-spacing:1px}.order-pix{margin-top:14px;text-align:left}.order-pix h4{margin:0 0 8px;text-align:center}
 </style>
 </head>
 <body>
-<div id="storeClosedOverlay" class="store-closed-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="storeClosedTitle"><div class="store-closed-card"><div class="logo">KB<span style="color:var(--red)">.</span> CLOSET 🍒</div><h1 id="storeClosedTitle">UM INSTANTINHO,<br>IT GIRLS.</h1><p id="storeClosedMessage">Estamos fazendo alguns ajustes na loja. Voltamos já! ❤️‍🔥</p><small>KB CLOSET • TOO HOT TO BE BASIC</small></div></div>
+<div id="storeClosedOverlay" class="store-closed-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="storeClosedTitle"><div class="store-closed-card"><div class="logo">KB<span style="color:var(--red)">.</span> CLOSET 🍒</div><h1 id="storeClosedTitle">SITE TRANCADO!</h1><p class="store-instagram">Verifique nosso Instagram<br><a href="https://www.instagram.com/kb.closet061/" target="_blank" rel="noopener">@kb.closet061</a></p><form id="storeUnlockForm" onsubmit="unlockStore(event)"><label for="storeAccessPassword">Senha de acesso</label><input id="storeAccessPassword" type="password" autocomplete="current-password" required placeholder="Digite a senha"><button class="submit" type="submit" id="storeUnlockButton">DESTRAVAR</button><p id="storeUnlockMessage" role="status" class="store-unlock-message"></p></form></div></div>
 <div class="topline" aria-label="Too hot to be basic. Seu próximo look favorito. KB Closet"><div class="topline-track"><div class="topline-copy"><span>TOO HOT TO BE BASIC 🍒</span><span class="marquee-separator">✦</span><span>SEU PRÓXIMO LOOK FAVORITO</span><span class="marquee-separator">✦</span><span>KB CLOSET</span><span class="marquee-separator">✦</span></div><div class="topline-copy" aria-hidden="true"><span>TOO HOT TO BE BASIC 🍒</span><span class="marquee-separator">✦</span><span>SEU PRÓXIMO LOOK FAVORITO</span><span class="marquee-separator">✦</span><span>KB CLOSET</span><span class="marquee-separator">✦</span></div></div>
 <header>
 <button class="menu-toggle" type="button" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" onclick="toggleSiteMenu()"><span></span><span></span><span></span></button>
@@ -355,7 +355,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
 <div><div class="eyebrow">KB CLOSET • BACKSTAGE</div><h2>PAINEL DE ADMINISTRAÇÃO</h2><p>Seu closet, seu estoque, suas regras.</p></div>
 <button type="button" class="admin-return" onclick="closeAdminWorkspace()">← VOLTAR À LOJA</button>
 </div>
-<div class="admin-inventory" id="storeAccessControl"><div class="admin-inventory-heading"><div><h3>ACESSO À LOJA</h3><p>Bloqueie a vitrine durante ajustes. Seu acesso de administradora continua funcionando.</p></div></div><button type="button" class="submit" id="storeLockButton" onclick="toggleStoreLock()">BLOQUEAR LOJA</button><p id="storeLockStatus" class="message" role="status"></p></div>
+<div class="admin-inventory" id="storeAccessControl"><div class="admin-inventory-heading"><div><h3>ACESSO À LOJA</h3><p>Defina a senha e depois bloqueie a vitrine. Sua conta de administradora continua entrando.</p></div></div><label for="adminStorePassword">Criar ou alterar senha de acesso</label><input id="adminStorePassword" type="password" minlength="4" maxlength="100" autocomplete="new-password" placeholder="Escolha uma senha (mín. 4 caracteres)"><button type="button" class="submit" id="saveStorePasswordButton" onclick="saveStoreAccessPassword()">SALVAR SENHA</button><p id="storePasswordStatus" class="message" role="status"></p><button type="button" class="submit" id="storeLockButton" onclick="toggleStoreLock()">BLOQUEAR LOJA</button><p id="storeLockStatus" class="message" role="status"></p></div>
 <div id="adminStats" class="admin-stats"></div>
 <div class="admin-section-tabs">
 <button type="button" id="adminProductsTab" class="admin-section-tab active" onclick="showAdminSection('products')">PRODUTOS & ESTOQUE</button>
@@ -469,7 +469,7 @@ const SUPABASE_URL='https://tbygkbxvpnjcjsvqueuv.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_RjqWz228EvN295E0zof1gA_J6Ju6FYi';
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let mode='signup',products=[],cart=JSON.parse(localStorage.getItem('kb_cart')||'[]');let productPhotoIndex={};let productVariants={};
-let isStoreAdmin=false,storeMaintenanceEnabled=false;
+let isStoreAdmin=false,storeMaintenanceEnabled=false,storeAccessGranted=false,storeAccessPasswordConfigured=false;
 
 const rates={
  'Samambaia Sul':5,
@@ -600,6 +600,23 @@ async function loadStoreSettings(){
  if(overlay){overlay.classList.toggle('hidden',!storeMaintenanceEnabled||isStoreAdmin||storeAccessGranted);}
  const button=document.getElementById('storeLockButton');if(button)button.textContent=storeMaintenanceEnabled?'ABRIR LOJA PARA AS CLIENTES':'BLOQUEAR LOJA';
  const status=document.getElementById('storeLockStatus');if(status&&isStoreAdmin)status.textContent=storeMaintenanceEnabled?'A loja está bloqueada para visitantes. Você continua com acesso administrativo.':'A loja está aberta para as clientes.';
+}
+async function saveStoreAccessPassword(){
+ if(!isStoreAdmin){alert('Entre como administradora.');return}
+ const input=document.getElementById('adminStorePassword'),status=document.getElementById('storePasswordStatus'),button=document.getElementById('saveStorePasswordButton'),password=input.value;
+ if(password.trim().length<4){status.textContent='Escolha uma senha com pelo menos 4 caracteres.';input.focus();return}
+ button.disabled=true;status.textContent='Salvando senha com segurança...';
+ const {data,error}=await supabaseClient.functions.invoke('store-access-password',{body:{action:'set',password}});
+ button.disabled=false;if(error||!data?.ok){status.textContent=data?.error||'Não consegui salvar. Tente novamente.';return}
+ input.value='';storeAccessPasswordConfigured=true;status.textContent='Senha salva! Agora você pode bloquear a loja. ❤️‍🔥';
+ const lockButton=document.getElementById('storeLockButton');if(lockButton)lockButton.disabled=false;
+}
+async function unlockStore(event){
+ event.preventDefault();const input=document.getElementById('storeAccessPassword'),msg=document.getElementById('storeUnlockMessage'),button=document.getElementById('storeUnlockButton');button.disabled=true;msg.textContent='Verificando senha...';
+ const {data,error}=await supabaseClient.functions.invoke('store-access-password',{body:{action:'verify',password:input.value}});
+ button.disabled=false;if(error||!data?.configured){msg.textContent='A senha ainda não foi configurada. Entre em contato com a loja.';return}
+ if(!data.ok){msg.textContent='Senha incorreta. Tente novamente.';input.value='';input.focus();return}
+ storeAccessGranted=true;msg.textContent='Acesso liberado! ❤️‍🔥';document.getElementById('storeClosedOverlay').classList.add('hidden');
 }
 async function toggleStoreLock(){
  if(!isStoreAdmin){alert('Entre com a conta de administradora para alterar o acesso da loja.');return}
