@@ -597,12 +597,13 @@ async function loadStoreSettings(){
  const {data,error}=await supabaseClient.from('store_settings').select('maintenance_enabled,maintenance_message').eq('id',true).maybeSingle();
  if(error){if(overlay)overlay.classList.add('hidden');const status=document.getElementById('storeLockStatus');if(status&&isStoreAdmin)status.textContent='Não consegui consultar o bloqueio da loja.';return}
  storeMaintenanceEnabled=!!data?.maintenance_enabled;
- if(overlay){overlay.classList.toggle('hidden',!storeMaintenanceEnabled||isStoreAdmin);document.getElementById('storeClosedMessage').textContent=data?.maintenance_message||'Estamos fazendo alguns ajustes na loja. Voltamos já! ❤️‍🔥'}
+ if(overlay){overlay.classList.toggle('hidden',!storeMaintenanceEnabled||isStoreAdmin||storeAccessGranted);}
  const button=document.getElementById('storeLockButton');if(button)button.textContent=storeMaintenanceEnabled?'ABRIR LOJA PARA AS CLIENTES':'BLOQUEAR LOJA';
  const status=document.getElementById('storeLockStatus');if(status&&isStoreAdmin)status.textContent=storeMaintenanceEnabled?'A loja está bloqueada para visitantes. Você continua com acesso administrativo.':'A loja está aberta para as clientes.';
 }
 async function toggleStoreLock(){
  if(!isStoreAdmin){alert('Entre com a conta de administradora para alterar o acesso da loja.');return}
+ if(!storeAccessPasswordConfigured){alert('Primeiro crie e salve a senha de acesso.');return}
  const button=document.getElementById('storeLockButton'),status=document.getElementById('storeLockStatus'),next=!storeMaintenanceEnabled;
  button.disabled=true;status.textContent=next?'Bloqueando a loja...':'Liberando a loja...';
  const {error}=await supabaseClient.from('store_settings').update({maintenance_enabled:next,updated_at:new Date().toISOString()}).eq('id',true);
@@ -617,6 +618,10 @@ async function checkAdmin(){
  document.getElementById('adminQuickbar').classList.toggle('hidden',!isAdmin);
  document.getElementById('adminPanel').classList.add('hidden');
  if(!isAdmin){document.body.classList.remove('admin-mode');return}
+ const {data:gateStatus,error:gateError}=await supabaseClient.functions.invoke('store-access-password',{body:{action:'status'}});
+ storeAccessPasswordConfigured=!gateError&&!!gateStatus?.configured;
+ const passwordStatus=document.getElementById('storePasswordStatus');if(passwordStatus)passwordStatus.textContent=storeAccessPasswordConfigured?'Senha de acesso configurada.':'Defina uma senha antes de bloquear a loja.';
+ const lockButton=document.getElementById('storeLockButton');if(lockButton)lockButton.disabled=!storeAccessPasswordConfigured;
 }
 async function loadProducts(category=''){
  let grid=document.getElementById('productGrid');grid.innerHTML='<p>Carregando peças...</p>';
