@@ -762,9 +762,16 @@ function renderAdminStats(){
  const pending=adminOrdersCache.filter(o=>!['Concluído','Cancelado'].includes(o.status)).length;
  document.getElementById('adminStats').innerHTML='<div class="admin-stat"><strong>'+active+'</strong><small>PRODUTOS NA VITRINE</small></div><div class="admin-stat"><strong>'+archived+'</strong><small>PRODUTOS ARQUIVADOS</small></div><div class="admin-stat"><strong>'+pending+'</strong><small>PEDIDOS EM ANDAMENTO</small></div>';
 }
+let adminPanelPlaceholder=null;
 async function openAdminWorkspace(){
  const quickbar=document.getElementById('adminQuickbar'),panel=document.getElementById('adminPanel');
  if(quickbar.classList.contains('hidden'))return;
+ /* Retira o painel do contêiner da conta para que nenhum estilo do site o esconda. */
+ if(!adminPanelPlaceholder){
+  adminPanelPlaceholder=document.createComment('KB Closet admin panel position');
+  panel.parentNode.insertBefore(adminPanelPlaceholder,panel);
+ }
+ document.body.appendChild(panel);
  document.body.classList.add('admin-mode');
  quickbar.classList.add('hidden');
  panel.classList.remove('hidden');
@@ -781,8 +788,14 @@ async function openAdminWorkspace(){
 }
 function closeAdminWorkspace(){
  document.body.classList.remove('admin-mode');
- document.getElementById('adminPanel').classList.add('hidden');
- const panel=document.getElementById('adminPanel');panel.style.display='';panel.style.position='';panel.style.inset='';panel.style.zIndex='';panel.style.overflow='';panel.style.padding='';panel.style.background='';panel.style.width='';panel.style.maxWidth='';
+ const panel=document.getElementById('adminPanel');
+ panel.classList.add('hidden');
+ panel.style.display='';panel.style.position='';panel.style.inset='';panel.style.zIndex='';panel.style.overflow='';panel.style.padding='';panel.style.background='';panel.style.width='';panel.style.maxWidth='';
+ if(adminPanelPlaceholder&&adminPanelPlaceholder.parentNode){
+  adminPanelPlaceholder.parentNode.insertBefore(panel,adminPanelPlaceholder);
+  adminPanelPlaceholder.remove();
+  adminPanelPlaceholder=null;
+ }
  document.getElementById('adminQuickbar').classList.remove('hidden');
 }
 async function showAdminSection(section){
