@@ -14,7 +14,7 @@
 body{margin:0;background:var(--deep);color:var(--cream);font-family:Arial,Helvetica,sans-serif}
 a{color:inherit}
 button{border:0;cursor:pointer;font-weight:800}
-.topline{background:var(--red);text-align:center;padding:9px;font-size:10px;letter-spacing:2px;font-weight:800}
+.topline{background:var(--red);overflow:hidden;padding:9px 0;font-size:10px;letter-spacing:2px;font-weight:800;white-space:nowrap}.topline-track{display:flex;width:max-content;animation:kb-marquee 24s linear infinite}.topline-copy{display:block;flex-shrink:0;padding-right:30px}.topline-copy span{display:inline-block;padding:0 15px}.topline-copy .marquee-separator{color:#ffd3dc}@keyframes kb-marquee{to{transform:translateX(-50%)}}@media(prefers-reduced-motion:reduce){.topline-track{animation:none;transform:none}}
 header{display:flex;align-items:center;justify-content:space-between;padding:20px 6%;border-bottom:1px solid var(--line)}
 .logo{font-size:24px;font-weight:950;letter-spacing:-1.5px}.logo span{color:var(--red)}
 .nav{display:flex;gap:22px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
@@ -160,7 +160,7 @@ body.admin-mode #adminOrderModal{z-index:60}
 </style>
 </head>
 <body>
-<div class="topline">NOVA COLEÇÃO • SEU PRÓXIMO LOOK FAVORITO ESTÁ AQUI</div>
+<div class="topline" aria-label="Too hot to be basic. Seu próximo look favorito. KB Closet"><div class="topline-track"><div class="topline-copy"><span>TOO HOT TO BE BASIC 🍒</span><span class="marquee-separator">✦</span><span>SEU PRÓXIMO LOOK FAVORITO</span><span class="marquee-separator">✦</span><span>KB CLOSET</span><span class="marquee-separator">✦</span></div><div class="topline-copy" aria-hidden="true"><span>TOO HOT TO BE BASIC 🍒</span><span class="marquee-separator">✦</span><span>SEU PRÓXIMO LOOK FAVORITO</span><span class="marquee-separator">✦</span><span>KB CLOSET</span><span class="marquee-separator">✦</span></div></div>
 <header>
 <button class="menu-toggle" type="button" id="menuToggle" aria-label="Abrir menu" aria-expanded="false" onclick="toggleSiteMenu()"><span></span><span></span><span></span></button>
 <div class="logo">KB<span>.</span> CLOSET</div>
