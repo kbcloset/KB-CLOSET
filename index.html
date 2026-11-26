@@ -821,11 +821,11 @@ document.getElementById('checkoutForm').addEventListener('submit',async e=>{
    msg.textContent='Pedido #'+data+' registrado. Preparando seu Pix...';
    const pixData=await generatePixForOrder(data);
    if(!pixData){msg.textContent='Pedido #'+data+' registrado, mas o Pix não foi gerado. Use GERAR PIX NOVAMENTE abaixo; não refaça o pedido.';return}
-   msg.textContent=zone==='Retirada'?'Pedido #'+data+' registrado! Pix dos produtos gerado. Pague pelo QR Code ou código abaixo. A retirada na KB Closet será das 10h às 18h.':'Pedido #'+data+' criado. Faça o pagamento pelo QR Code ou código Pix abaixo.';
+   msg.textContent=zone==='Retirada'?'Pedido #'+data+' registrado! Pix dos produtos gerado. Pague pelo QR Code ou código abaixo. A retirada na KB Closet será das 10h às 18h. Quando seu pedido estiver pronto, a KB Closet entrará em contato para avisar você.':'Pedido #'+data+' criado. Faça o pagamento pelo QR Code ou código Pix abaixo.';
    return;
  }
  let paymentLabel={card_delivery:'Cartão na entrega pela Ton',card_link:'Cartão por link da Ton'}[payment];
- msg.textContent=zone==='Retirada'?'Pedido #'+data+' registrado! A retirada na KB Closet será das 10h às 18h. Pagamento dos produtos: '+paymentLabel+'.':zone==='Outro'?'Pedido #'+data+' registrado! Quando o pedido estiver pronto, a KB Closet entrará em contato. Depois, você poderá chamar seu Uber para retirar o pedido e pagar diretamente ao motorista. Pagamento dos produtos: '+paymentLabel+'.':'Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet combinará o pagamento conforme a opção escolhida.';
+ msg.textContent=zone==='Retirada'?'Pedido #'+data+' registrado! A retirada na KB Closet será das 10h às 18h. Quando seu pedido estiver pronto, a KB Closet entrará em contato para avisar você. Pagamento dos produtos: '+paymentLabel+'.':zone==='Outro'?'Pedido #'+data+' registrado! Quando o pedido estiver pronto, a KB Closet entrará em contato. Depois, você poderá chamar seu Uber para retirar o pedido e pagar diretamente ao motorista. Pagamento dos produtos: '+paymentLabel+'.':'Pedido #'+data+' registrado! Pagamento: '+paymentLabel+'. A KB Closet combinará o pagamento conforme a opção escolhida.';
 });
 function renderOrderTracking(status){
  const steps=['Pedido recebido','Pedido confirmado','Em preparação','Saiu para entrega','Concluído'];
